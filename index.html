@@ -181,6 +181,60 @@
             transform: translateY(-2px);
         }
 
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #555;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            min-width: 150px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 8px 0;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .user-dropdown a:hover {
+            color: var(--accent-color);
+        }
+
         /* Main Content */
         .main-content {
             display: flex;
@@ -298,6 +352,50 @@
             color: var(--accent-color);
         }
 
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .platform-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .platform-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .platform-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .platform-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -382,6 +480,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+        }
+
+        .seller-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .seller-rating {
@@ -527,6 +632,64 @@
             max-height: 200px;
             margin-top: 10px;
             display: none;
+        }
+
+        /* Profile Settings */
+        .profile-settings {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #555;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--accent-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .avatar-upload input {
+            display: none;
+        }
+
+        .profile-info {
+            flex: 1;
         }
 
         /* Chat Styles */
@@ -695,6 +858,25 @@
             color: var(--text-secondary);
         }
 
+        /* Rules Page */
+        .rules-page {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .rules-list {
+            list-style-type: decimal;
+            padding-left: 20px;
+        }
+
+        .rules-list li {
+            margin-bottom: 10px;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -829,6 +1011,10 @@
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
             
+            .platforms-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
             .product-detail-header {
                 flex-direction: column;
             }
@@ -879,7 +1065,17 @@
                         <button class="btn btn-outline" id="login-btn">Войти</button>
                         <button class="btn btn-primary" id="register-btn">Регистрация</button>
                         <button class="btn btn-outline" id="logout-btn" style="display: none;">Выйти</button>
-                        <span id="user-info" style="display: none; margin-left: 10px;"></span>
+                        <div class="user-profile" id="user-profile" style="display: none;">
+                            <div class="user-avatar" id="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span id="username-display"></span>
+                            <div class="user-dropdown" id="user-dropdown">
+                                <a href="#" id="profile-settings-link">Настройки профиля</a>
+                                <a href="#" id="my-products-link">Мои товары</a>
+                                <a href="#" id="my-purchases-link">Мои покупки</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -920,14 +1116,14 @@
 
                 <!-- Main Content (Home) -->
                 <div id="home-content">
-                    <h2 class="section-title"><i class="fas fa-fire"></i> Популярные товары</h2>
-                    <div class="products-grid" id="products-grid">
-                        <!-- Products will be populated by JavaScript -->
+                    <h2 class="section-title"><i class="fas fa-fire"></i> Популярные платформы</h2>
+                    <div class="platforms-grid" id="platforms-grid">
+                        <!-- Platforms will be populated by JavaScript -->
                     </div>
 
                     <h2 class="section-title"><i class="fas fa-star"></i> Новые предложения</h2>
-                    <div class="products-grid" id="new-products-grid">
-                        <!-- New products will be populated by JavaScript -->
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be populated by JavaScript -->
                     </div>
                 </div>
 
@@ -979,6 +1175,48 @@
                 <!-- Product Detail -->
                 <div class="product-detail" id="product-detail">
                     <!-- Product detail will be populated by JavaScript -->
+                </div>
+
+                <!-- Profile Settings -->
+                <div class="profile-settings" id="profile-settings">
+                    <h2 class="section-title"><i class="fas fa-user-cog"></i> Настройки профиля</h2>
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <img id="profile-avatar-img" src="" alt="Аватар">
+                            <div class="avatar-upload">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" id="avatar-upload-input" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profile-username"></h3>
+                            <p id="profile-email"></p>
+                        </div>
+                    </div>
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="profile-username-input">Имя пользователя</label>
+                            <input type="text" id="profile-username-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-email-input">Email</label>
+                            <input type="email" id="profile-email-input" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </form>
+                </div>
+
+                <!-- Rules Page -->
+                <div class="rules-page" id="rules-page">
+                    <h2 class="section-title"><i class="fas fa-book"></i> Правила платформы</h2>
+                    <ol class="rules-list">
+                        <li>Запрещена продажа запрещенных товаров и услуг</li>
+                        <li>Запрещено вводить покупателей в заблуждение</li>
+                        <li>Все споры решаются через службу поддержки</li>
+                        <li>Комиссия платформы составляет 25% от стоимости товара</li>
+                        <li>Товары автоматически снимаются с публикации через 30 дней</li>
+                        <li>Администрация оставляет за собой право блокировать аккаунты за нарушение правил</li>
+                    </ol>
                 </div>
 
                 <!-- Admin Panel -->
@@ -1142,47 +1380,47 @@
     <script>
         // Game and app data with real logos
         const games = [
-            { name: "GTA 5 Online", icon: "https://img.icons8.com/color/48/gta-5.png" },
-            { name: "Roblox", icon: "https://img.icons8.com/color/48/roblox.png" },
-            { name: "Fortnite", icon: "https://img.icons8.com/color/48/fortnite.png" },
-            { name: "Genshin Impact", icon: "https://img.icons8.com/color/48/genshin-impact.png" },
-            { name: "Minecraft", icon: "https://img.icons8.com/color/48/minecraft.png" },
-            { name: "Valorant", icon: "https://img.icons8.com/color/48/valorant.png" },
-            { name: "Counter-Strike 2", icon: "https://img.icons8.com/color/48/counter-strike.png" },
-            { name: "SCraft", icon: "https://img.icons8.com/color/48/starcraft.png" },
-            { name: "Arena Breakout", icon: "https://img.icons8.com/color/48/arena-breakout.png" },
-            { name: "ARC Raiders", icon: "https://img.icons8.com/color/48/arc-raiders.png" },
-            { name: "EA SPORTS FC 26", icon: "https://img.icons8.com/color/48/fifa.png" },
-            { name: "Dota 2", icon: "https://img.icons8.com/color/48/dota-2.png" },
-            { name: "Танки ПК", icon: "https://img.icons8.com/color/48/world-of-tanks.png" },
-            { name: "Battlefield 6", icon: "https://img.icons8.com/color/48/battlefield.png" },
-            { name: "eFootball", icon: "https://img.icons8.com/color/48/efootball.png" },
-            { name: "Rust", icon: "https://img.icons8.com/color/48/rust.png" },
-            { name: "Dead by Daylight", icon: "https://img.icons8.com/color/48/dead-by-daylight.png" },
-            { name: "Hearthstone", icon: "https://img.icons8.com/color/48/hearthstone.png" },
-            { name: "Warface", icon: "https://img.icons8.com/color/48/warface.png" },
-            { name: "World of Warcraft", icon: "https://img.icons8.com/color/48/world-of-warcraft.png" }
+            { name: "GTA 5 Online", icon: "https://cdn-icons-png.flaticon.com/512/731/731962.png" },
+            { name: "Roblox", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968520.png" },
+            { name: "Fortnite", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968522.png" },
+            { name: "Genshin Impact", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859165.png" },
+            { name: "Minecraft", icon: "https://cdn-icons-png.flaticon.com/512/732/732244.png" },
+            { name: "Valorant", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859194.png" },
+            { name: "Counter-Strike 2", icon: "https://cdn-icons-png.flaticon.com/512/731/731964.png" },
+            { name: "SCraft", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859185.png" },
+            { name: "Arena Breakout", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859175.png" },
+            { name: "ARC Raiders", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859170.png" },
+            { name: "EA SPORTS FC 26", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859180.png" },
+            { name: "Dota 2", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859178.png" },
+            { name: "Танки ПК", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859190.png" },
+            { name: "Battlefield 6", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859172.png" },
+            { name: "eFootball", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859179.png" },
+            { name: "Rust", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859187.png" },
+            { name: "Dead by Daylight", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859177.png" },
+            { name: "Hearthstone", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859182.png" },
+            { name: "Warface", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859193.png" },
+            { name: "World of Warcraft", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859195.png" }
         ];
 
         const mobileGames = [
-            { name: "PUBG Mobile", icon: "https://img.icons8.com/color/48/pubg-mobile.png" },
-            { name: "Brawl Stars", icon: "https://img.icons8.com/color/48/brawl-stars.png" },
-            { name: "Standoff 2", icon: "https://img.icons8.com/color/48/standoff-2.png" },
-            { name: "Clash Royale", icon: "https://img.icons8.com/color/48/clash-royale.png" },
-            { name: "Clash of Clan", icon: "https://img.icons8.com/color/48/clash-of-clans.png" }
+            { name: "PUBG Mobile", icon: "https://cdn-icons-png.flaticon.com/512/731/731963.png" },
+            { name: "Brawl Stars", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859173.png" },
+            { name: "Standoff 2", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859188.png" },
+            { name: "Clash Royale", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859174.png" },
+            { name: "Clash of Clan", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859176.png" }
         ];
 
         const apps = [
-            { name: "Telegram", icon: "https://img.icons8.com/color/48/telegram-app.png" },
-            { name: "Steam", icon: "https://img.icons8.com/color/48/steam.png" },
-            { name: "PlayStation", icon: "https://img.icons8.com/color/48/playstation.png" },
-            { name: "TikTok", icon: "https://img.icons8.com/color/48/tiktok.png" },
-            { name: "App Store", icon: "https://img.icons8.com/color/48/app-store.png" },
-            { name: "ChatGPT", icon: "https://img.icons8.com/color/48/chatgpt.png" },
-            { name: "Discord", icon: "https://img.icons8.com/color/48/discord.png" },
-            { name: "Xbox", icon: "https://img.icons8.com/color/48/xbox.png" },
-            { name: "Spotify", icon: "https://img.icons8.com/color/48/spotify.png" },
-            { name: "Windows", icon: "https://img.icons8.com/color/48/windows-10.png" }
+            { name: "Telegram", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png" },
+            { name: "Steam", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968521.png" },
+            { name: "PlayStation", icon: "https://cdn-icons-png.flaticon.com/512/731/731975.png" },
+            { name: "TikTok", icon: "https://cdn-icons-png.flaticon.com/512/3046/3046126.png" },
+            { name: "App Store", icon: "https://cdn-icons-png.flaticon.com/512/179/179309.png" },
+            { name: "ChatGPT", icon: "https://cdn-icons-png.flaticon.com/512/6134/6134346.png" },
+            { name: "Discord", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968756.png" },
+            { name: "Xbox", icon: "https://cdn-icons-png.flaticon.com/512/732/732221.png" },
+            { name: "Spotify", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111624.png" },
+            { name: "Windows", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968856.png" }
         ];
 
         // Subcategories for products
@@ -1196,15 +1434,17 @@
         let products = JSON.parse(localStorage.getItem('products')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let supportMessages = JSON.parse(localStorage.getItem('supportMessages')) || [];
+        let chats = JSON.parse(localStorage.getItem('chats')) || {};
         let currentChat = 'support';
         let currentProduct = null;
+        const COMMISSION_RATE = 0.25; // 25% комиссия
 
         // DOM Elements
         const gamesCategory = document.getElementById('games-category');
         const mobileGamesCategory = document.getElementById('mobile-games-category');
         const appsCategory = document.getElementById('apps-category');
+        const platformsGrid = document.getElementById('platforms-grid');
         const productsGrid = document.getElementById('products-grid');
-        const newProductsGrid = document.getElementById('new-products-grid');
         const themeToggle = document.getElementById('theme-toggle');
         const chatButton = document.getElementById('chat-button');
         const chatContainer = document.getElementById('chat-container');
@@ -1215,7 +1455,10 @@
         const loginBtn = document.getElementById('login-btn');
         const registerBtn = document.getElementById('register-btn');
         const logoutBtn = document.getElementById('logout-btn');
-        const userInfo = document.getElementById('user-info');
+        const userProfile = document.getElementById('user-profile');
+        const userAvatar = document.getElementById('user-avatar');
+        const usernameDisplay = document.getElementById('username-display');
+        const userDropdown = document.getElementById('user-dropdown');
         const loginModal = document.getElementById('login-modal');
         const registerModal = document.getElementById('register-modal');
         const loginClose = document.getElementById('login-close');
@@ -1223,6 +1466,8 @@
         const homeContent = document.getElementById('home-content');
         const addProductForm = document.getElementById('add-product-form');
         const productDetail = document.getElementById('product-detail');
+        const profileSettings = document.getElementById('profile-settings');
+        const rulesPage = document.getElementById('rules-page');
         const adminPanel = document.getElementById('admin-panel');
         const productCategory = document.getElementById('product-category');
         const productSubcategory = document.getElementById('product-subcategory');
@@ -1238,17 +1483,40 @@
         const navSupport = document.getElementById('nav-support');
         const navAddProduct = document.getElementById('nav-add-product');
         const navAdmin = document.getElementById('nav-admin');
+        const profileSettingsLink = document.getElementById('profile-settings-link');
         const supportMessagesContainer = document.getElementById('support-messages');
         const adminTabs = document.querySelectorAll('.admin-tab');
+        const profileAvatarImg = document.getElementById('profile-avatar-img');
+        const avatarUploadInput = document.getElementById('avatar-upload-input');
+        const profileUsername = document.getElementById('profile-username');
+        const profileEmail = document.getElementById('profile-email');
+        const profileUsernameInput = document.getElementById('profile-username-input');
+        const profileEmailInput = document.getElementById('profile-email-input');
 
         // Initialize the application
         function init() {
             populateCategories();
+            populatePlatforms();
             populateProductCategories();
             displayProducts();
             checkAuthStatus();
             loadSupportMessages();
             setupEventListeners();
+            
+            // Create admin user if not exists
+            if (!users.find(u => u.role === 'admin')) {
+                const adminUser = {
+                    id: 'admin',
+                    username: 'Администратор',
+                    email: 'admin@rocketmarket.com',
+                    password: 'admin123',
+                    role: 'admin',
+                    avatar: null,
+                    createdAt: new Date().toISOString()
+                };
+                users.push(adminUser);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
         }
 
         // Populate categories in sidebar
@@ -1259,7 +1527,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${game.icon}" alt="${game.name}">
+                        <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
                     </div>
                     <span>${game.name}</span>
                 `;
@@ -1273,7 +1541,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${game.icon}" alt="${game.name}">
+                        <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
                     </div>
                     <span>${game.name}</span>
                 `;
@@ -1287,12 +1555,32 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${app.icon}" alt="${app.name}">
+                        <img src="${app.icon}" alt="${app.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
                     </div>
                     <span>${app.name}</span>
                 `;
                 li.addEventListener('click', () => filterProductsByCategory(app.name));
                 appsCategory.appendChild(li);
+            });
+        }
+
+        // Populate platforms grid
+        function populatePlatforms() {
+            // Combine games and apps for platforms grid
+            const allPlatforms = [...games, ...mobileGames, ...apps];
+            
+            // Display first 12 platforms
+            allPlatforms.slice(0, 12).forEach(platform => {
+                const platformCard = document.createElement('div');
+                platformCard.className = 'platform-card';
+                platformCard.innerHTML = `
+                    <div class="platform-icon">
+                        <img src="${platform.icon}" alt="${platform.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
+                    </div>
+                    <div class="platform-name">${platform.name}</div>
+                `;
+                platformCard.addEventListener('click', () => filterProductsByCategory(platform.name));
+                platformsGrid.appendChild(platformCard);
             });
         }
 
@@ -1359,7 +1647,6 @@
         function displayProducts() {
             // Clear existing products
             productsGrid.innerHTML = '';
-            newProductsGrid.innerHTML = '';
             
             // Filter active products (not expired)
             const activeProducts = products.filter(product => {
@@ -1371,19 +1658,18 @@
             // Sort by creation date (newest first)
             activeProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             
-            // Display products (limit to 8 for each section)
-            const popularProducts = activeProducts.slice(0, 4);
-            const newProducts = activeProducts.slice(0, 8);
+            // Display products (limit to 8)
+            const displayProducts = activeProducts.slice(0, 8);
             
-            popularProducts.forEach(product => {
+            displayProducts.forEach(product => {
                 const productCard = createProductCard(product);
                 productsGrid.appendChild(productCard);
             });
             
-            newProducts.forEach(product => {
-                const productCard = createProductCard(product);
-                newProductsGrid.appendChild(productCard);
-            });
+            // If no products, show message
+            if (displayProducts.length === 0) {
+                productsGrid.innerHTML = '<p>Пока нет товаров. Будьте первым, кто добавит товар!</p>';
+            }
         }
 
         // Create product card element
@@ -1400,7 +1686,7 @@
                     <div class="product-price">${product.price} ₽</div>
                     <div class="product-seller">
                         <div class="seller-avatar">
-                            <i class="fas fa-user"></i>
+                            ${product.sellerAvatar ? `<img src="${product.sellerAvatar}" alt="${product.seller}">` : '<i class="fas fa-user"></i>'}
                         </div>
                         <span>${product.seller}</span>
                         <div class="seller-rating">
@@ -1451,7 +1737,7 @@
                         <div class="product-detail-price">${product.price} ₽</div>
                         <div class="product-detail-seller">
                             <div class="seller-avatar">
-                                <i class="fas fa-user"></i>
+                                ${product.sellerAvatar ? `<img src="${product.sellerAvatar}" alt="${product.seller}">` : '<i class="fas fa-user"></i>'}
                             </div>
                             <span>${product.seller}</span>
                             <div class="seller-rating">
@@ -1488,6 +1774,8 @@
             // Show product detail and hide other content
             homeContent.style.display = 'none';
             addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
             adminPanel.style.display = 'none';
             productDetail.style.display = 'block';
         }
@@ -1500,7 +1788,11 @@
                 return;
             }
             
-            if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${product.price} ₽?`)) {
+            // Calculate commission and final price
+            const commission = Math.round(product.price * COMMISSION_RATE);
+            const finalPrice = product.price + commission;
+            
+            if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${finalPrice} ₽? (включая комиссию ${commission} ₽)`)) {
                 // In a real application, here would be payment processing
                 alert('Покупка успешно совершена! Свяжитесь с продавцом для получения товара.');
                 
@@ -1513,6 +1805,8 @@
                     sellerId: product.sellerId,
                     sellerName: product.seller,
                     price: product.price,
+                    commission: commission,
+                    finalPrice: finalPrice,
                     date: new Date().toISOString()
                 };
                 
@@ -1522,6 +1816,13 @@
                 
                 // Send notification to seller
                 sendNotificationToSeller(product.sellerId, `Пользователь ${currentUser.username} купил ваш товар "${product.title}"`);
+                
+                // Remove product from listings
+                products = products.filter(p => p.id !== product.id);
+                localStorage.setItem('products', JSON.stringify(products));
+                
+                // Return to home page
+                showHomePage();
             }
         }
 
@@ -1529,6 +1830,24 @@
         function sendNotificationToSeller(sellerId, message) {
             // In a real application, this would send a push notification or email
             console.log(`Notification to seller ${sellerId}: ${message}`);
+            
+            // Add to support messages for admin to see
+            const notification = {
+                id: generateId(),
+                userId: sellerId,
+                username: 'System',
+                message: message,
+                timestamp: new Date().toISOString(),
+                type: 'notification'
+            };
+            
+            supportMessages.push(notification);
+            localStorage.setItem('supportMessages', JSON.stringify(supportMessages));
+            
+            // Update admin panel if admin is viewing
+            if (currentUser && currentUser.role === 'admin') {
+                loadSupportMessages();
+            }
         }
 
         // Filter products by category
@@ -1539,7 +1858,6 @@
             );
             
             productsGrid.innerHTML = '';
-            newProductsGrid.innerHTML = '';
             
             filteredProducts.forEach(product => {
                 const productCard = createProductCard(product);
@@ -1549,6 +1867,8 @@
             // Update UI to show we're filtering
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
             adminPanel.style.display = 'none';
             productDetail.style.display = 'none';
             
@@ -1564,7 +1884,6 @@
             );
             
             productsGrid.innerHTML = '';
-            newProductsGrid.innerHTML = '';
             
             filteredProducts.forEach(product => {
                 const productCard = createProductCard(product);
@@ -1574,6 +1893,8 @@
             // Update UI to show we're searching
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
             adminPanel.style.display = 'none';
             productDetail.style.display = 'none';
             
@@ -1594,8 +1915,15 @@
             loginBtn.style.display = 'none';
             registerBtn.style.display = 'none';
             logoutBtn.style.display = 'block';
-            userInfo.style.display = 'block';
-            userInfo.textContent = currentUser.username;
+            userProfile.style.display = 'flex';
+            usernameDisplay.textContent = currentUser.username;
+            
+            // Update user avatar
+            if (currentUser.avatar) {
+                userAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="${currentUser.username}">`;
+            } else {
+                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            }
             
             // Show add product button for all users
             navAddProduct.style.display = 'block';
@@ -1622,6 +1950,7 @@
                 email,
                 password, // In a real app, this should be hashed
                 role: 'user',
+                avatar: null,
                 createdAt: new Date().toISOString()
             };
             
@@ -1658,12 +1987,46 @@
             loginBtn.style.display = 'block';
             registerBtn.style.display = 'block';
             logoutBtn.style.display = 'none';
-            userInfo.style.display = 'none';
+            userProfile.style.display = 'none';
             navAddProduct.style.display = 'none';
             navAdmin.style.display = 'none';
             
             // Return to home page
             showHomePage();
+        }
+
+        // Update user profile
+        function updateUserProfile(username, email, avatar) {
+            if (!currentUser) return;
+            
+            // Update user data
+            currentUser.username = username;
+            currentUser.email = email;
+            if (avatar) {
+                currentUser.avatar = avatar;
+            }
+            
+            // Update in users array
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            // Update current user in localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            updateUIForLoggedInUser();
+            
+            // Update profile display
+            profileUsername.textContent = currentUser.username;
+            profileEmail.textContent = currentUser.email;
+            if (currentUser.avatar) {
+                profileAvatarImg.src = currentUser.avatar;
+            }
+            
+            alert('Профиль успешно обновлен!');
         }
 
         // Add new product
@@ -1673,6 +2036,7 @@
                 ...productData,
                 seller: currentUser.username,
                 sellerId: currentUser.id,
+                sellerAvatar: currentUser.avatar,
                 rating: '5.0',
                 createdAt: new Date().toISOString()
             };
@@ -1714,53 +2078,75 @@
         }
 
         function loadChatMessages(chatId) {
-            // In a real app, this would load from server
-            chatMessages.innerHTML = `
-                <div class="message received">
-                    <div class="message-info">${chatId === 'support' ? 'Поддержка' : 'Продавец'} • Только что</div>
-                    <p>Здравствуйте! Чем могу помочь?</p>
-                </div>
-            `;
+            // Get or create chat
+            if (!chats[chatId]) {
+                chats[chatId] = [];
+            }
+            
+            // Load messages
+            chatMessages.innerHTML = '';
+            chats[chatId].forEach(msg => {
+                addMessageToChat(msg.text, msg.sender === currentUser.id ? 'sent' : 'received', msg.timestamp, msg.senderName);
+            });
+            
+            // If no messages, add welcome message
+            if (chats[chatId].length === 0) {
+                addMessageToChat('Здравствуйте! Чем могу помочь?', 'received', new Date().toISOString(), chatId === 'support' ? 'Поддержка' : 'Продавец');
+            }
         }
 
         function sendChatMessage() {
             const message = chatInput.value.trim();
             if (!message) return;
             
-            if (currentChat === 'support') {
-                // Send to support
+            // Create message object
+            const messageObj = {
+                id: generateId(),
+                text: message,
+                sender: currentUser.id,
+                senderName: currentUser.username,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Add to chat
+            if (!chats[currentChat]) {
+                chats[currentChat] = [];
+            }
+            chats[currentChat].push(messageObj);
+            localStorage.setItem('chats', JSON.stringify(chats));
+            
+            // Display message
+            addMessageToChat(message, 'sent', messageObj.timestamp, currentUser.username);
+            
+            // If this is a support chat and user is admin, don't add to support messages
+            if (currentChat !== 'support' || currentUser.role !== 'admin') {
+                // Add to support messages for admin to see
                 const supportMessage = {
                     id: generateId(),
                     userId: currentUser.id,
                     username: currentUser.username,
-                    message,
+                    message: message,
                     timestamp: new Date().toISOString(),
-                    replied: false
+                    chatId: currentChat
                 };
                 
                 supportMessages.push(supportMessage);
                 localStorage.setItem('supportMessages', JSON.stringify(supportMessages));
-                
-                // Add to chat
-                addMessageToChat(message, 'sent');
-                
-                // If admin is online, they would see this message in admin panel
-                if (currentUser.role === 'admin') {
-                    loadSupportMessages();
-                }
-            } else {
-                // Send to seller (in a real app, this would be sent to the specific seller)
-                addMessageToChat(message, 'sent');
             }
             
             chatInput.value = '';
+            
+            // If admin is viewing support messages, update them
+            if (currentUser.role === 'admin' && document.getElementById('support-content').classList.contains('active')) {
+                loadSupportMessages();
+            }
         }
 
-        function addMessageToChat(text, type) {
+        function addMessageToChat(text, type, timestamp, senderName) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             messageDiv.innerHTML = `
-                <div class="message-info">${type === 'sent' ? 'Вы' : (currentChat === 'support' ? 'Поддержка' : 'Продавец')} • Только что</div>
+                <div class="message-info">${senderName} • ${new Date(timestamp).toLocaleString()}</div>
                 <p>${text}</p>
             `;
             chatMessages.appendChild(messageDiv);
@@ -1780,7 +2166,7 @@
                         <span>${new Date(msg.timestamp).toLocaleString()}</span>
                     </div>
                     <p>${msg.message}</p>
-                    ${!msg.replied ? `<button class="btn btn-primary reply-btn" data-id="${msg.id}">Ответить</button>` : ''}
+                    ${msg.type !== 'notification' ? `<button class="btn btn-primary reply-btn" data-userid="${msg.userId}" data-username="${msg.username}">Ответить</button>` : ''}
                 `;
                 supportMessagesContainer.appendChild(messageDiv);
             });
@@ -1788,11 +2174,9 @@
             // Add event listeners to reply buttons
             document.querySelectorAll('.reply-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const messageId = this.getAttribute('data-id');
-                    const message = supportMessages.find(m => m.id === messageId);
-                    if (message) {
-                        openChatWithUser(message.userId, message.username);
-                    }
+                    const userId = this.getAttribute('data-userid');
+                    const username = this.getAttribute('data-username');
+                    openChatWithUser(userId, username);
                 });
             });
         }
@@ -1807,10 +2191,68 @@
             loadChatMessages(userId);
         }
 
+        // OAuth integration simulation
+        function oauthLogin(provider) {
+            // In a real application, this would redirect to OAuth provider
+            // For simulation, we'll create a user based on the provider
+            
+            let username, email;
+            
+            switch(provider) {
+                case 'google':
+                    username = 'Google User';
+                    email = 'googleuser@example.com';
+                    break;
+                case 'vk':
+                    username = 'VK User';
+                    email = 'vkuser@example.com';
+                    break;
+                case 'telegram':
+                    username = 'Telegram User';
+                    email = 'telegramuser@example.com';
+                    break;
+            }
+            
+            // Check if user already exists
+            let user = users.find(u => u.email === email);
+            
+            if (!user) {
+                // Create new user
+                user = {
+                    id: generateId(),
+                    username,
+                    email,
+                    password: 'oauth', // Not used for OAuth
+                    role: 'user',
+                    avatar: null,
+                    oauthProvider: provider,
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+            
+            // Log in the user
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            updateUIForLoggedInUser();
+            
+            // Close modal and show home page
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'none';
+            showHomePage();
+            
+            alert(`Успешный вход через ${provider === 'google' ? 'Google' : provider === 'vk' ? 'ВКонтакте' : 'Telegram'}!`);
+        }
+
         // Page navigation
         function showHomePage() {
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
             adminPanel.style.display = 'none';
             productDetail.style.display = 'none';
             displayProducts();
@@ -1825,6 +2267,44 @@
             
             homeContent.style.display = 'none';
             addProductForm.style.display = 'block';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+        }
+
+        function showProfileSettings() {
+            if (!currentUser) {
+                alert('Для просмотра настроек профиля необходимо войти в систему');
+                return;
+            }
+            
+            // Populate profile form
+            profileUsernameInput.value = currentUser.username;
+            profileEmailInput.value = currentUser.email;
+            profileUsername.textContent = currentUser.username;
+            profileEmail.textContent = currentUser.email;
+            
+            if (currentUser.avatar) {
+                profileAvatarImg.src = currentUser.avatar;
+            } else {
+                profileAvatarImg.src = '';
+                profileAvatarImg.alt = 'Аватар';
+            }
+            
+            homeContent.style.display = 'none';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'block';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+        }
+
+        function showRulesPage() {
+            homeContent.style.display = 'none';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'block';
             adminPanel.style.display = 'none';
             productDetail.style.display = 'none';
         }
@@ -1837,6 +2317,8 @@
             
             homeContent.style.display = 'none';
             addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
             adminPanel.style.display = 'block';
             productDetail.style.display = 'none';
             
@@ -1895,6 +2377,24 @@
                 registerModal.style.display = 'none';
             });
 
+            // User profile dropdown
+            userProfile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                userDropdown.classList.remove('show');
+            });
+
+            // Profile settings link
+            profileSettingsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                userDropdown.classList.remove('show');
+                showProfileSettings();
+            });
+
             // Close modals when clicking outside
             window.addEventListener('click', function(e) {
                 if (e.target === loginModal) {
@@ -1935,6 +2435,28 @@
                 }
             });
 
+            // Profile form
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('profile-username-input').value;
+                const email = document.getElementById('profile-email-input').value;
+                
+                updateUserProfile(username, email, currentUser.avatar);
+            });
+
+            // Avatar upload
+            avatarUploadInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentUser.avatar = e.target.result;
+                        updateUserProfile(currentUser.username, currentUser.email, currentUser.avatar);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
             // Product form
             document.getElementById('product-form').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -1942,7 +2464,7 @@
                 const title = document.getElementById('product-title').value;
                 const category = document.getElementById('product-category').value;
                 const subcategory = document.getElementById('product-subcategory').value;
-                const price = document.getElementById('product-price').value;
+                const price = parseInt(document.getElementById('product-price').value);
                 const description = document.getElementById('product-description').value;
                 const fullDescription = document.getElementById('product-full-description').value;
                 const image = imagePreview.style.display !== 'none' ? imagePreview.src : null;
@@ -2006,6 +2528,25 @@
                 showHomePage();
             });
 
+            navCatalog.addEventListener('click', function(e) {
+                e.preventDefault();
+                showHomePage();
+            });
+
+            navRules.addEventListener('click', function(e) {
+                e.preventDefault();
+                showRulesPage();
+            });
+
+            navSupport.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentChat = 'support';
+                document.getElementById('chat-title').textContent = 'Поддержка';
+                chatContainer.style.display = 'flex';
+                chatButton.style.display = 'none';
+                loadChatMessages('support');
+            });
+
             navAddProduct.addEventListener('click', function(e) {
                 e.preventDefault();
                 showAddProductPage();
@@ -2033,29 +2574,29 @@
                 });
             });
 
-            // Social auth buttons (simulated)
+            // OAuth buttons
             document.getElementById('google-login').addEventListener('click', function() {
-                alert('Вход через Google (в реальном приложении здесь была бы OAuth интеграция)');
+                oauthLogin('google');
             });
 
             document.getElementById('vk-login').addEventListener('click', function() {
-                alert('Вход через ВКонтакте (в реальном приложении здесь была бы OAuth интеграция)');
+                oauthLogin('vk');
             });
 
             document.getElementById('telegram-login').addEventListener('click', function() {
-                alert('Вход через Telegram (в реальном приложении здесь была бы OAuth интеграция)');
+                oauthLogin('telegram');
             });
 
             document.getElementById('google-register').addEventListener('click', function() {
-                alert('Регистрация через Google (в реальном приложении здесь была бы OAuth интеграция)');
+                oauthLogin('google');
             });
 
             document.getElementById('vk-register').addEventListener('click', function() {
-                alert('Регистрация через ВКонтакте (в реальном приложении здесь была бы OAuth интеграция)');
+                oauthLogin('vk');
             });
 
             document.getElementById('telegram-register').addEventListener('click', function() {
-                alert('Регистрация через Telegram (в реальном приложении здесь была бы OAuth интеграция)');
+                oauthLogin('telegram');
             });
         }
 
