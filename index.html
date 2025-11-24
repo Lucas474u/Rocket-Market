@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rocket Market - Маркетплейс игровых товаров</title>
+    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/48/000000/rocket.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="RocketMarketRobot" data-size="medium" data-onauth="onTelegramAuth" data-request-access="write"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="1047967896238-blc1eted70loo8fqvh563on2ee6bjghk.apps.googleusercontent.com">
     <style>
         :root {
             --primary: #6a11cb;
@@ -17,6 +21,19 @@
             --gray: #6c757d;
             --card-bg: #ffffff;
             --border: #e0e0e0;
+            --text: #333333;
+            --bg: #f5f7fa;
+        }
+
+        [data-theme="dark"] {
+            --primary: #8a2be2;
+            --secondary: #4a86e8;
+            --dark: #121212;
+            --light: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --border: #333333;
+            --text: #e0e0e0;
+            --bg: #121212;
         }
 
         * {
@@ -24,11 +41,12 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
 
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: var(--bg);
+            color: var(--text);
             line-height: 1.6;
         }
 
@@ -100,6 +118,51 @@
             align-items: center;
         }
 
+        .theme-toggle {
+            margin-right: 15px;
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(24px);
+        }
+
         .auth-buttons button {
             background: rgba(255, 255, 255, 0.2);
             border: none;
@@ -139,12 +202,13 @@
             position: absolute;
             top: 50px;
             right: 0;
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             width: 200px;
             display: none;
             z-index: 100;
+            border: 1px solid var(--border);
         }
 
         .user-dropdown.active {
@@ -154,7 +218,7 @@
         .user-dropdown a {
             display: block;
             padding: 12px 15px;
-            color: var(--dark);
+            color: var(--text);
             text-decoration: none;
             border-bottom: 1px solid var(--border);
         }
@@ -164,7 +228,8 @@
         }
 
         .user-dropdown a:hover {
-            background: #f5f5f5;
+            background: var(--primary);
+            color: white;
         }
 
         .user-dropdown a i {
@@ -186,11 +251,12 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             margin-right: 20px;
+            border: 1px solid var(--border);
         }
 
         .sidebar h3 {
             margin-bottom: 15px;
-            color: var(--dark);
+            color: var(--text);
             font-size: 18px;
         }
 
@@ -213,8 +279,8 @@
         }
 
         .sidebar ul li a:hover, .sidebar ul li a.active {
-            background: #f0f4ff;
-            color: var(--primary);
+            background: var(--primary);
+            color: white;
         }
 
         .sidebar ul li a i {
@@ -244,12 +310,13 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             max-width: 400px;
             margin: 50px auto;
+            border: 1px solid var(--border);
         }
 
         .auth-form h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .form-group {
@@ -260,14 +327,17 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: var(--text);
         }
 
-        .form-group input {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid var(--border);
             border-radius: 6px;
             font-size: 16px;
+            background: var(--card-bg);
+            color: var(--text);
         }
 
         .btn {
@@ -296,43 +366,32 @@
 
         .oauth-buttons {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 20px;
         }
 
         .oauth-btn {
-            flex: 1;
-            margin: 0 5px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            background: white;
+            background: var(--card-bg);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
+            color: var(--text);
         }
 
         .oauth-btn:hover {
-            background: #f5f5f5;
+            background: var(--primary);
+            color: white;
         }
 
         .oauth-btn i {
             margin-right: 8px;
             font-size: 18px;
-        }
-
-        .oauth-btn.telegram {
-            color: #0088cc;
-        }
-
-        .oauth-btn.google {
-            color: #db4437;
-        }
-
-        .oauth-btn.vk {
-            color: #4a76a8;
         }
 
         /* Profile Page */
@@ -344,6 +403,7 @@
             margin-bottom: 20px;
             display: flex;
             align-items: center;
+            border: 1px solid var(--border);
         }
 
         .profile-avatar {
@@ -362,7 +422,7 @@
 
         .profile-info h2 {
             margin-bottom: 5px;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .profile-stats {
@@ -378,7 +438,7 @@
         .stat-value {
             font-size: 18px;
             font-weight: bold;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .stat-label {
@@ -392,6 +452,8 @@
             border-radius: 10px 10px 0 0;
             overflow: hidden;
             margin-bottom: 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
         }
 
         .profile-tab {
@@ -399,6 +461,7 @@
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            color: var(--text);
         }
 
         .profile-tab.active {
@@ -413,6 +476,8 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-top: none;
         }
 
         /* Wallet */
@@ -456,6 +521,7 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
         }
 
         .transaction-item {
@@ -511,6 +577,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             cursor: pointer;
             transition: all 0.3s;
+            border: 1px solid var(--border);
         }
 
         .category-card:hover {
@@ -542,6 +609,8 @@
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: all 0.3s;
+            border: 1px solid var(--border);
+            position: relative;
         }
 
         .product-card:hover {
@@ -556,6 +625,34 @@
             align-items: center;
             justify-content: center;
             color: var(--gray);
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .product-action {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
         .product-info {
@@ -579,6 +676,152 @@
             font-weight: bold;
             color: var(--primary);
             font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .product-seller {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .product-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .product-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .product-btn.buy {
+            background: var(--success);
+            color: white;
+        }
+
+        .product-btn.message {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Product Detail */
+        .product-detail {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 20px;
+        }
+
+        .product-detail-image {
+            flex: 1;
+            max-width: 400px;
+            height: 300px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+        }
+
+        .product-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product-detail-info {
+            flex: 2;
+        }
+
+        .product-detail-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-detail-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .product-detail-price {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .product-detail-seller {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .seller-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .seller-info h4 {
+            margin-bottom: 5px;
+        }
+
+        .seller-rating {
+            color: var(--warning);
+        }
+
+        .product-detail-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .detail-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .detail-btn.buy {
+            background: var(--success);
+            color: white;
+            flex: 2;
+        }
+
+        .detail-btn.message {
+            background: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        .detail-btn.like {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            width: 50px;
         }
 
         /* Create Listing */
@@ -587,6 +830,7 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
         }
 
         .form-row {
@@ -607,6 +851,8 @@
             font-size: 16px;
             resize: vertical;
             min-height: 100px;
+            background: var(--card-bg);
+            color: var(--text);
         }
 
         .image-upload {
@@ -632,6 +878,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
         }
 
         .chat-sidebar {
@@ -653,7 +900,8 @@
         }
 
         .chat-item.active {
-            background: #f0f4ff;
+            background: var(--primary);
+            color: white;
         }
 
         .chat-avatar {
@@ -717,6 +965,7 @@
             padding: 10px 15px;
             border-radius: 18px;
             background: #f0f0f0;
+            color: var(--text);
         }
 
         .message.own .message-bubble {
@@ -743,6 +992,8 @@
             border: 1px solid var(--border);
             border-radius: 24px;
             margin-right: 10px;
+            background: var(--card-bg);
+            color: var(--text);
         }
 
         .chat-send {
@@ -807,6 +1058,14 @@
                 border-right: none;
                 border-bottom: 1px solid var(--border);
             }
+            
+            .product-detail {
+                flex-direction: column;
+            }
+            
+            .product-detail-image {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -828,6 +1087,10 @@
                     </ul>
                 </nav>
                 <div class="user-actions">
+                    <label class="theme-toggle">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="theme-slider"></span>
+                    </label>
                     <div class="auth-buttons" id="authButtons">
                         <button id="loginBtn">Войти</button>
                         <button id="registerBtn">Регистрация</button>
@@ -895,7 +1158,7 @@
                         </div>
                         <div class="form-group">
                             <label for="productCategory">Категория</label>
-                            <select id="productCategory" class="form-group input">
+                            <select id="productCategory">
                                 <option value="">Выберите категорию</option>
                                 <!-- Categories will be populated by JS -->
                             </select>
@@ -909,12 +1172,8 @@
                             <input type="number" id="productPrice" placeholder="Введите цену">
                         </div>
                         <div class="form-group">
-                            <label>Изображение товара</label>
-                            <div class="image-upload" id="imageUpload">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p>Нажмите для загрузки изображения</p>
-                            </div>
-                            <input type="file" id="productImage" accept="image/*" style="display: none;">
+                            <label for="productImageUrl">Ссылка на изображение</label>
+                            <input type="text" id="productImageUrl" placeholder="Введите URL изображения">
                         </div>
                         <button class="btn btn-block" id="createListingBtn">Разместить объявление</button>
                     </div>
@@ -1024,6 +1283,13 @@
                     </div>
                 </div>
 
+                <!-- Product Detail Page -->
+                <div class="page" id="product-detail">
+                    <div class="product-detail" id="productDetailContent">
+                        <!-- Product detail will be loaded here -->
+                    </div>
+                </div>
+
                 <!-- Auth Pages -->
                 <div class="page" id="login">
                     <div class="auth-form">
@@ -1038,9 +1304,9 @@
                         </div>
                         <button class="btn btn-block" id="loginSubmitBtn">Войти</button>
                         <div class="oauth-buttons">
-                            <button class="oauth-btn telegram"><i class="fab fa-telegram"></i> Telegram</button>
-                            <button class="oauth-btn google"><i class="fab fa-google"></i> Google</button>
-                            <button class="oauth-btn vk"><i class="fab fa-vk"></i> VK</button>
+                            <div id="vkAuthContainer"></div>
+                            <button class="oauth-btn" id="telegramAuthBtn"><i class="fab fa-telegram"></i> Войти через Telegram</button>
+                            <div class="g-signin2" data-onsuccess="onGoogleSignIn"></div>
                         </div>
                         <p style="text-align: center; margin-top: 15px;">
                             Нет аккаунта? <a href="#" id="goToRegister">Зарегистрироваться</a>
@@ -1069,9 +1335,9 @@
                         </div>
                         <button class="btn btn-block" id="registerSubmitBtn">Зарегистрироваться</button>
                         <div class="oauth-buttons">
-                            <button class="oauth-btn telegram"><i class="fab fa-telegram"></i> Telegram</button>
-                            <button class="oauth-btn google"><i class="fab fa-google"></i> Google</button>
-                            <button class="oauth-btn vk"><i class="fab fa-vk"></i> VK</button>
+                            <div id="vkAuthContainerRegister"></div>
+                            <button class="oauth-btn" id="telegramAuthBtnRegister"><i class="fab fa-telegram"></i> Зарегистрироваться через Telegram</button>
+                            <div class="g-signin2" data-onsuccess="onGoogleSignIn"></div>
                         </div>
                         <p style="text-align: center; margin-top: 15px;">
                             Уже есть аккаунт? <a href="#" id="goToLogin">Войти</a>
@@ -1083,6 +1349,216 @@
     </div>
 
     <script>
+        // Backend API simulation
+        const RocketMarketAPI = {
+            // User management
+            users: JSON.parse(localStorage.getItem('rocketMarketUsers')) || [],
+            products: JSON.parse(localStorage.getItem('rocketMarketProducts')) || [],
+            chats: JSON.parse(localStorage.getItem('rocketMarketChats')) || [],
+            transactions: JSON.parse(localStorage.getItem('rocketMarketTransactions')) || [],
+            likes: JSON.parse(localStorage.getItem('rocketMarketLikes')) || [],
+            
+            // Save data to localStorage
+            saveData() {
+                localStorage.setItem('rocketMarketUsers', JSON.stringify(this.users));
+                localStorage.setItem('rocketMarketProducts', JSON.stringify(this.products));
+                localStorage.setItem('rocketMarketChats', JSON.stringify(this.chats));
+                localStorage.setItem('rocketMarketTransactions', JSON.stringify(this.transactions));
+                localStorage.setItem('rocketMarketLikes', JSON.stringify(this.likes));
+            },
+            
+            // User methods
+            registerUser(userData) {
+                const user = {
+                    id: Date.now(),
+                    ...userData,
+                    joinDate: new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }),
+                    balance: 0,
+                    products: 0,
+                    purchases: 0,
+                    sales: 0,
+                    avatar: userData.username.charAt(0).toUpperCase()
+                };
+                
+                this.users.push(user);
+                this.saveData();
+                return user;
+            },
+            
+            loginUser(email, password) {
+                return this.users.find(user => user.email === email && user.password === password);
+            },
+            
+            getUserById(id) {
+                return this.users.find(user => user.id === id);
+            },
+            
+            updateUser(id, updates) {
+                const userIndex = this.users.findIndex(user => user.id === id);
+                if (userIndex !== -1) {
+                    this.users[userIndex] = { ...this.users[userIndex], ...updates };
+                    this.saveData();
+                    return this.users[userIndex];
+                }
+                return null;
+            },
+            
+            // Product methods
+            createProduct(productData) {
+                const product = {
+                    id: Date.now(),
+                    ...productData,
+                    date: new Date().toISOString().split('T')[0],
+                    likes: 0,
+                    likedBy: []
+                };
+                
+                this.products.push(product);
+                
+                // Update user stats
+                const user = this.getUserById(productData.sellerId);
+                if (user) {
+                    user.products += 1;
+                    this.updateUser(user.id, user);
+                }
+                
+                this.saveData();
+                return product;
+            },
+            
+            getProducts() {
+                return this.products;
+            },
+            
+            getProductById(id) {
+                return this.products.find(product => product.id === id);
+            },
+            
+            getProductsBySeller(sellerId) {
+                return this.products.filter(product => product.sellerId === sellerId);
+            },
+            
+            deleteProduct(id) {
+                const productIndex = this.products.findIndex(product => product.id === id);
+                if (productIndex !== -1) {
+                    this.products.splice(productIndex, 1);
+                    this.saveData();
+                    return true;
+                }
+                return false;
+            },
+            
+            likeProduct(productId, userId) {
+                const product = this.getProductById(productId);
+                if (product) {
+                    if (product.likedBy.includes(userId)) {
+                        // Unlike
+                        product.likes -= 1;
+                        product.likedBy = product.likedBy.filter(id => id !== userId);
+                    } else {
+                        // Like
+                        product.likes += 1;
+                        product.likedBy.push(userId);
+                    }
+                    this.saveData();
+                    return product;
+                }
+                return null;
+            },
+            
+            // Chat methods
+            createChat(user1Id, user2Id, productId = null) {
+                const existingChat = this.chats.find(chat => 
+                    (chat.user1Id === user1Id && chat.user2Id === user2Id) || 
+                    (chat.user1Id === user2Id && chat.user2Id === user1Id)
+                );
+                
+                if (existingChat) {
+                    return existingChat;
+                }
+                
+                const chat = {
+                    id: Date.now(),
+                    user1Id,
+                    user2Id,
+                    productId,
+                    messages: [],
+                    lastMessage: '',
+                    lastMessageTime: new Date().toISOString()
+                };
+                
+                this.chats.push(chat);
+                this.saveData();
+                return chat;
+            },
+            
+            getChatsByUser(userId) {
+                return this.chats.filter(chat => chat.user1Id === userId || chat.user2Id === userId);
+            },
+            
+            getChatById(id) {
+                return this.chats.find(chat => chat.id === id);
+            },
+            
+            addMessage(chatId, senderId, text) {
+                const chat = this.getChatById(chatId);
+                if (chat) {
+                    const message = {
+                        id: Date.now(),
+                        senderId,
+                        text,
+                        time: new Date().toISOString()
+                    };
+                    
+                    chat.messages.push(message);
+                    chat.lastMessage = text;
+                    chat.lastMessageTime = new Date().toISOString();
+                    this.saveData();
+                    return message;
+                }
+                return null;
+            },
+            
+            // Transaction methods
+            createTransaction(userId, type, amount, description) {
+                const transaction = {
+                    id: Date.now(),
+                    userId,
+                    type,
+                    amount,
+                    description,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'completed'
+                };
+                
+                this.transactions.push(transaction);
+                
+                // Update user balance
+                const user = this.getUserById(userId);
+                if (user) {
+                    if (type === 'deposit') {
+                        user.balance += amount;
+                    } else if (type === 'withdrawal') {
+                        user.balance -= amount;
+                    } else if (type === 'purchase') {
+                        user.balance -= amount;
+                        user.purchases += 1;
+                    } else if (type === 'sale') {
+                        user.balance += amount;
+                        user.sales += 1;
+                    }
+                    this.updateUser(userId, user);
+                }
+                
+                this.saveData();
+                return transaction;
+            },
+            
+            getTransactionsByUser(userId) {
+                return this.transactions.filter(transaction => transaction.userId === userId);
+            }
+        };
+
         // Application State
         const state = {
             currentUser: null,
@@ -1146,10 +1622,8 @@
                 { id: 'audio-editors', name: 'Аудиоредакторы', icon: 'music' },
                 { id: 'leonardo-ai', name: 'Leonardo AI', icon: 'palette' }
             ],
-            products: [],
-            chats: [],
             currentChat: null,
-            transactions: []
+            currentProduct: null
         };
 
         // DOM Elements
@@ -1168,8 +1642,6 @@
         const categoriesGrid = document.getElementById('categoriesGrid');
         const productCategory = document.getElementById('productCategory');
         const createListingBtn = document.getElementById('createListingBtn');
-        const imageUpload = document.getElementById('imageUpload');
-        const productImage = document.getElementById('productImage');
         const chatList = document.getElementById('chatList');
         const chatMessages = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
@@ -1177,118 +1649,31 @@
         const depositBtn = document.getElementById('depositBtn');
         const withdrawBtn = document.getElementById('withdrawBtn');
         const profileTabs = document.querySelectorAll('.profile-tab');
+        const themeToggle = document.getElementById('themeToggle');
 
         // Initialize the application
         function init() {
-            // Load sample data
-            loadSampleData();
-            
             // Set up event listeners
             setupEventListeners();
             
-            // Check if user is logged in (for demo purposes, we'll check localStorage)
+            // Check if user is logged in
             checkAuthStatus();
+            
+            // Initialize theme
+            initTheme();
             
             // Show home page by default
             showPage('home');
+            
+            // Load initial data
+            loadInitialData();
         }
 
-        // Load sample data for demonstration
-        function loadSampleData() {
-            // Sample products
-            state.products = [
-                {
-                    id: 1,
-                    title: 'Аккаунт Steam с CS:GO',
-                    description: 'Аккаунт Steam с игрой CS:GO, 1000+ часов, много скинов',
-                    price: 2500,
-                    category: 'steam',
-                    image: null,
-                    seller: 'GameTrader',
-                    date: '2024-07-15'
-                },
-                {
-                    id: 2,
-                    title: 'Премиум подписка Spotify на 1 год',
-                    description: 'Премиум подписка Spotify на 1 год, семейный план',
-                    price: 1200,
-                    category: 'spotify',
-                    image: null,
-                    seller: 'MediaSeller',
-                    date: '2024-07-14'
-                },
-                {
-                    id: 3,
-                    title: 'Аккаунт Netflix UHD',
-                    description: 'Аккаунт Netflix с доступом к UHD контенту, 4 профиля',
-                    price: 800,
-                    category: 'netflix',
-                    image: null,
-                    seller: 'StreamMaster',
-                    date: '2024-07-13'
-                },
-                {
-                    id: 4,
-                    title: 'Игровая валюта GTA Online',
-                    description: '10,000,000 игровой валюты GTA Online, быстрая доставка',
-                    price: 1500,
-                    category: 'rockstar-games',
-                    image: null,
-                    seller: 'GTAHelper',
-                    date: '2024-07-12'
-                }
-            ];
-
-            // Sample chats
-            state.chats = [
-                {
-                    id: 1,
-                    userId: 2,
-                    userName: 'GameTrader',
-                    lastMessage: 'Добрый день! Интересует ваш аккаунт Steam',
-                    unread: 1,
-                    avatar: 'G'
-                },
-                {
-                    id: 2,
-                    userId: 3,
-                    userName: 'MediaSeller',
-                    lastMessage: 'Спасибо за покупку! Наслаждайтесь музыкой',
-                    unread: 0,
-                    avatar: 'M'
-                }
-            ];
-
-            // Sample transactions
-            state.transactions = [
-                {
-                    id: 1,
-                    name: 'Пополнение баланса',
-                    amount: 5000,
-                    date: '2024-07-10',
-                    type: 'deposit'
-                },
-                {
-                    id: 2,
-                    name: 'Покупка аккаунта Steam',
-                    amount: -2500,
-                    date: '2024-07-11',
-                    type: 'purchase'
-                },
-                {
-                    id: 3,
-                    name: 'Продажа подписки Spotify',
-                    amount: 1200,
-                    date: '2024-07-12',
-                    type: 'sale'
-                }
-            ];
-
-            // Populate categories
+        // Load initial data
+        function loadInitialData() {
             renderCategories();
             populateCategorySelect();
             renderFeaturedProducts();
-            renderChatList();
         }
 
         // Set up event listeners
@@ -1336,8 +1721,6 @@
 
             // Create listing
             createListingBtn.addEventListener('click', handleCreateListing);
-            imageUpload.addEventListener('click', () => productImage.click());
-            productImage.addEventListener('change', handleImageUpload);
 
             // Chat
             sendMessageBtn.addEventListener('click', sendMessage);
@@ -1368,6 +1751,27 @@
                     showPage('home');
                 });
             });
+
+            // Theme toggle
+            themeToggle.addEventListener('change', toggleTheme);
+
+            // OAuth buttons
+            document.getElementById('telegramAuthBtn').addEventListener('click', handleTelegramAuth);
+            document.getElementById('telegramAuthBtnRegister').addEventListener('click', handleTelegramAuth);
+        }
+
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('rocketMarketTheme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            themeToggle.checked = savedTheme === 'dark';
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('rocketMarketTheme', newTheme);
         }
 
         // Show specific page
@@ -1393,15 +1797,20 @@
                 loadWalletData();
             } else if (pageName === 'my-listings' && state.currentUser) {
                 loadMyListings();
+            } else if (pageName === 'chats' && state.currentUser) {
+                loadChats();
             }
         }
 
         // Check authentication status
         function checkAuthStatus() {
-            const user = localStorage.getItem('rocketMarketUser');
-            if (user) {
-                state.currentUser = JSON.parse(user);
-                updateUIForAuth(true);
+            const userId = localStorage.getItem('rocketMarketCurrentUser');
+            if (userId) {
+                const user = RocketMarketAPI.getUserById(parseInt(userId));
+                if (user) {
+                    state.currentUser = user;
+                    updateUIForAuth(true);
+                }
             } else {
                 updateUIForAuth(false);
             }
@@ -1415,7 +1824,7 @@
                 
                 // Update user info
                 document.getElementById('userName').textContent = state.currentUser.username;
-                document.getElementById('userAvatar').textContent = state.currentUser.username.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = state.currentUser.avatar;
             } else {
                 authButtons.style.display = 'flex';
                 userProfile.style.display = 'none';
@@ -1433,28 +1842,19 @@
                 return;
             }
             
-            // For demo purposes, we'll create a user object
-            state.currentUser = {
-                id: 1,
-                username: 'Forzen565',
-                email: email,
-                joinDate: 'июля 2024',
-                balance: 3700,
-                products: 13,
-                purchases: 17,
-                sales: 2
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('rocketMarketUser', JSON.stringify(state.currentUser));
-            
-            // Update UI
-            updateUIForAuth(true);
-            showPage('home');
-            
-            // Clear form
-            document.getElementById('loginEmail').value = '';
-            document.getElementById('loginPassword').value = '';
+            const user = RocketMarketAPI.loginUser(email, password);
+            if (user) {
+                state.currentUser = user;
+                localStorage.setItem('rocketMarketCurrentUser', user.id);
+                updateUIForAuth(true);
+                showPage('home');
+                
+                // Clear form
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            } else {
+                alert('Неверный email или пароль');
+            }
         }
 
         // Handle registration
@@ -1474,22 +1874,21 @@
                 return;
             }
             
-            // For demo purposes, we'll create a user object
-            state.currentUser = {
-                id: Date.now(),
-                username: username,
-                email: email,
-                joinDate: new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }),
-                balance: 0,
-                products: 0,
-                purchases: 0,
-                sales: 0
-            };
+            // Check if user already exists
+            const existingUser = RocketMarketAPI.users.find(user => user.email === email);
+            if (existingUser) {
+                alert('Пользователь с таким email уже существует');
+                return;
+            }
             
-            // Save to localStorage
-            localStorage.setItem('rocketMarketUser', JSON.stringify(state.currentUser));
+            const user = RocketMarketAPI.registerUser({
+                username,
+                email,
+                password
+            });
             
-            // Update UI
+            state.currentUser = user;
+            localStorage.setItem('rocketMarketCurrentUser', user.id);
             updateUIForAuth(true);
             showPage('home');
             
@@ -1503,8 +1902,65 @@
         // Handle logout
         function handleLogout() {
             state.currentUser = null;
-            localStorage.removeItem('rocketMarketUser');
+            localStorage.removeItem('rocketMarketCurrentUser');
             updateUIForAuth(false);
+            showPage('home');
+        }
+
+        // Handle Telegram OAuth
+        function handleTelegramAuth() {
+            // In a real implementation, this would redirect to Telegram OAuth
+            // For demo purposes, we'll create a mock user
+            const telegramUser = {
+                id: Date.now(),
+                username: 'TelegramUser',
+                email: `telegram${Date.now()}@example.com`,
+                password: 'telegram',
+                joinDate: new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }),
+                balance: 0,
+                products: 0,
+                purchases: 0,
+                sales: 0,
+                avatar: 'T'
+            };
+            
+            // Check if user already exists
+            let user = RocketMarketAPI.users.find(u => u.email === telegramUser.email);
+            if (!user) {
+                user = RocketMarketAPI.registerUser(telegramUser);
+            }
+            
+            state.currentUser = user;
+            localStorage.setItem('rocketMarketCurrentUser', user.id);
+            updateUIForAuth(true);
+            showPage('home');
+        }
+
+        // Handle Google OAuth
+        function onGoogleSignIn(googleUser) {
+            const profile = googleUser.getBasicProfile();
+            const googleUserData = {
+                id: Date.now(),
+                username: profile.getName(),
+                email: profile.getEmail(),
+                password: 'google',
+                joinDate: new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }),
+                balance: 0,
+                products: 0,
+                purchases: 0,
+                sales: 0,
+                avatar: profile.getName().charAt(0).toUpperCase()
+            };
+            
+            // Check if user already exists
+            let user = RocketMarketAPI.users.find(u => u.email === googleUserData.email);
+            if (!user) {
+                user = RocketMarketAPI.registerUser(googleUserData);
+            }
+            
+            state.currentUser = user;
+            localStorage.setItem('rocketMarketCurrentUser', user.id);
+            updateUIForAuth(true);
             showPage('home');
         }
 
@@ -1546,7 +2002,14 @@
             const featuredProducts = document.getElementById('featuredProducts');
             featuredProducts.innerHTML = '';
             
-            state.products.forEach(product => {
+            const products = RocketMarketAPI.getProducts();
+            
+            if (products.length === 0) {
+                featuredProducts.innerHTML = '<p>Пока нет товаров. Будьте первым, кто разместит объявление!</p>';
+                return;
+            }
+            
+            products.forEach(product => {
                 const productCard = createProductCard(product);
                 featuredProducts.appendChild(productCard);
             });
@@ -1554,63 +2017,247 @@
 
         // Create product card
         function createProductCard(product) {
+            const seller = RocketMarketAPI.getUserById(product.sellerId);
+            const isLiked = state.currentUser && product.likedBy.includes(state.currentUser.id);
+            
             const card = document.createElement('div');
             card.className = 'product-card';
             card.innerHTML = `
                 <div class="product-image">
-                    ${product.image ? 
-                        `<img src="${product.image}" alt="${product.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                    ${product.imageUrl ? 
+                        `<img src="${product.imageUrl}" alt="${product.title}">` : 
                         `<i class="fas fa-image" style="font-size: 40px; color: #ccc;"></i>`
                     }
+                    <div class="product-actions">
+                        <button class="product-action like-btn ${isLiked ? 'liked' : ''}" data-product-id="${product.id}">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-title">${product.title}</div>
                     <div class="product-description">${product.description}</div>
                     <div class="product-price">${product.price} ₽</div>
+                    <div class="product-seller">Продавец: ${seller ? seller.username : 'Неизвестно'}</div>
+                    <div class="product-buttons">
+                        <button class="product-btn buy" data-product-id="${product.id}">Купить</button>
+                        <button class="product-btn message" data-product-id="${product.id}">Написать</button>
+                    </div>
                 </div>
             `;
             
+            // Add event listeners
+            const buyBtn = card.querySelector('.buy');
+            const messageBtn = card.querySelector('.message');
+            const likeBtn = card.querySelector('.like-btn');
+            
+            buyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleBuyProduct(product.id);
+            });
+            
+            messageBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleMessageSeller(product.id);
+            });
+            
+            likeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleLikeProduct(product.id);
+            });
+            
             card.addEventListener('click', () => {
-                // In a real app, this would open a product detail view
-                alert(`Вы выбрали: ${product.title}\nЦена: ${product.price} ₽`);
+                showProductDetail(product.id);
             });
             
             return card;
         }
 
+        // Handle buy product
+        function handleBuyProduct(productId) {
+            if (!state.currentUser) {
+                alert('Пожалуйста, войдите в систему, чтобы совершить покупку');
+                showPage('login');
+                return;
+            }
+            
+            const product = RocketMarketAPI.getProductById(productId);
+            if (!product) {
+                alert('Товар не найден');
+                return;
+            }
+            
+            if (state.currentUser.balance < product.price) {
+                alert('Недостаточно средств на балансе');
+                showPage('wallet');
+                return;
+            }
+            
+            if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${product.price} ₽?`)) {
+                // Create transaction
+                RocketMarketAPI.createTransaction(
+                    state.currentUser.id, 
+                    'purchase', 
+                    product.price, 
+                    `Покупка: ${product.title}`
+                );
+                
+                // Update seller's balance
+                const seller = RocketMarketAPI.getUserById(product.sellerId);
+                if (seller) {
+                    RocketMarketAPI.createTransaction(
+                        seller.id, 
+                        'sale', 
+                        product.price, 
+                        `Продажа: ${product.title}`
+                    );
+                }
+                
+                // Remove product
+                RocketMarketAPI.deleteProduct(productId);
+                
+                alert('Покупка совершена успешно!');
+                renderFeaturedProducts();
+                if (document.getElementById('my-listings').classList.contains('active')) {
+                    loadMyListings();
+                }
+            }
+        }
+
+        // Handle message seller
+        function handleMessageSeller(productId) {
+            if (!state.currentUser) {
+                alert('Пожалуйста, войдите в систему, чтобы написать продавцу');
+                showPage('login');
+                return;
+            }
+            
+            const product = RocketMarketAPI.getProductById(productId);
+            if (!product) {
+                alert('Товар не найден');
+                return;
+            }
+            
+            // Create or get chat
+            const chat = RocketMarketAPI.createChat(state.currentUser.id, product.sellerId, productId);
+            
+            // Show chats page
+            showPage('chats');
+            
+            // Select the chat
+            setTimeout(() => {
+                const chatItem = document.querySelector(`[data-chat-id="${chat.id}"]`);
+                if (chatItem) {
+                    chatItem.click();
+                }
+            }, 100);
+        }
+
+        // Handle like product
+        function handleLikeProduct(productId) {
+            if (!state.currentUser) {
+                alert('Пожалуйста, войдите в систему, чтобы добавить в избранное');
+                showPage('login');
+                return;
+            }
+            
+            const updatedProduct = RocketMarketAPI.likeProduct(productId, state.currentUser.id);
+            if (updatedProduct) {
+                renderFeaturedProducts();
+                
+                // Update product detail if open
+                if (state.currentProduct && state.currentProduct.id === productId) {
+                    showProductDetail(productId);
+                }
+            }
+        }
+
+        // Show product detail
+        function showProductDetail(productId) {
+            const product = RocketMarketAPI.getProductById(productId);
+            if (!product) {
+                alert('Товар не найден');
+                return;
+            }
+            
+            state.currentProduct = product;
+            const seller = RocketMarketAPI.getUserById(product.sellerId);
+            const isLiked = state.currentUser && product.likedBy.includes(state.currentUser.id);
+            
+            const productDetailContent = document.getElementById('productDetailContent');
+            productDetailContent.innerHTML = `
+                <div class="product-detail-image">
+                    ${product.imageUrl ? 
+                        `<img src="${product.imageUrl}" alt="${product.title}">` : 
+                        `<i class="fas fa-image" style="font-size: 60px; color: #ccc;"></i>`
+                    }
+                </div>
+                <div class="product-detail-info">
+                    <h1 class="product-detail-title">${product.title}</h1>
+                    <p class="product-detail-description">${product.description}</p>
+                    <div class="product-detail-price">${product.price} ₽</div>
+                    <div class="product-detail-seller">
+                        <div class="seller-avatar">${seller ? seller.avatar : '?'}</div>
+                        <div class="seller-info">
+                            <h4>${seller ? seller.username : 'Неизвестно'}</h4>
+                            <div class="seller-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span> (${seller ? seller.sales : 0} продаж)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-detail-actions">
+                        <button class="detail-btn buy" data-product-id="${product.id}">Купить сейчас</button>
+                        <button class="detail-btn message" data-product-id="${product.id}">Написать продавцу</button>
+                        <button class="detail-btn like ${isLiked ? 'liked' : ''}" data-product-id="${product.id}">
+                            <i class="fas fa-heart"></i> ${product.likes}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners
+            const buyBtn = productDetailContent.querySelector('.buy');
+            const messageBtn = productDetailContent.querySelector('.message');
+            const likeBtn = productDetailContent.querySelector('.like');
+            
+            buyBtn.addEventListener('click', () => {
+                handleBuyProduct(product.id);
+            });
+            
+            messageBtn.addEventListener('click', () => {
+                handleMessageSeller(product.id);
+            });
+            
+            likeBtn.addEventListener('click', () => {
+                handleLikeProduct(product.id);
+            });
+            
+            showPage('product-detail');
+        }
+
         // Filter products by category
         function filterProductsByCategory(categoryId) {
-            const filteredProducts = categoryId ? 
-                state.products.filter(product => product.category === categoryId) : 
-                state.products;
+            const products = categoryId ? 
+                RocketMarketAPI.getProducts().filter(product => product.category === categoryId) : 
+                RocketMarketAPI.getProducts();
             
             const featuredProducts = document.getElementById('featuredProducts');
             featuredProducts.innerHTML = '';
             
-            if (filteredProducts.length === 0) {
+            if (products.length === 0) {
                 featuredProducts.innerHTML = '<p>Товары в этой категории не найдены</p>';
                 return;
             }
             
-            filteredProducts.forEach(product => {
+            products.forEach(product => {
                 const productCard = createProductCard(product);
                 featuredProducts.appendChild(productCard);
             });
-        }
-
-        // Handle image upload
-        function handleImageUpload(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    imageUpload.innerHTML = `
-                        <img src="${event.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px;">
-                        <p>Изображение загружено</p>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            }
         }
 
         // Handle create listing
@@ -1625,30 +2272,22 @@
             const category = document.getElementById('productCategory').value;
             const description = document.getElementById('productDescription').value;
             const price = document.getElementById('productPrice').value;
+            const imageUrl = document.getElementById('productImageUrl').value;
             
             if (!title || !category || !description || !price) {
-                alert('Пожалуйста, заполните все поля');
+                alert('Пожалуйста, заполните все обязательные поля');
                 return;
             }
             
             // Create new product
-            const newProduct = {
-                id: Date.now(),
-                title: title,
-                description: description,
+            const newProduct = RocketMarketAPI.createProduct({
+                title,
+                category,
+                description,
                 price: parseInt(price),
-                category: category,
-                image: null,
-                seller: state.currentUser.username,
-                date: new Date().toISOString().split('T')[0]
-            };
-            
-            // Add to products array
-            state.products.unshift(newProduct);
-            
-            // Update user stats
-            state.currentUser.products += 1;
-            localStorage.setItem('rocketMarketUser', JSON.stringify(state.currentUser));
+                imageUrl: imageUrl || null,
+                sellerId: state.currentUser.id
+            });
             
             // Show success message
             alert('Объявление успешно размещено!');
@@ -1658,32 +2297,47 @@
             document.getElementById('productCategory').value = '';
             document.getElementById('productDescription').value = '';
             document.getElementById('productPrice').value = '';
-            imageUpload.innerHTML = `
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p>Нажмите для загрузки изображения</p>
-            `;
+            document.getElementById('productImageUrl').value = '';
             
             // Show home page with the new product
             showPage('home');
             renderFeaturedProducts();
         }
 
+        // Load chats
+        function loadChats() {
+            if (!state.currentUser) return;
+            
+            const chats = RocketMarketAPI.getChatsByUser(state.currentUser.id);
+            renderChatList(chats);
+        }
+
         // Render chat list
-        function renderChatList() {
+        function renderChatList(chats) {
             chatList.innerHTML = '';
             
-            state.chats.forEach(chat => {
+            if (chats.length === 0) {
+                chatList.innerHTML = '<p style="padding: 15px; text-align: center;">У вас пока нет чатов</p>';
+                return;
+            }
+            
+            chats.forEach(chat => {
+                const otherUserId = chat.user1Id === state.currentUser.id ? chat.user2Id : chat.user1Id;
+                const otherUser = RocketMarketAPI.getUserById(otherUserId);
+                const product = chat.productId ? RocketMarketAPI.getProductById(chat.productId) : null;
+                
                 const chatItem = document.createElement('li');
                 chatItem.className = 'chat-item';
+                chatItem.setAttribute('data-chat-id', chat.id);
                 if (state.currentChat && state.currentChat.id === chat.id) {
                     chatItem.classList.add('active');
                 }
                 
                 chatItem.innerHTML = `
-                    <div class="chat-avatar">${chat.avatar}</div>
+                    <div class="chat-avatar">${otherUser ? otherUser.avatar : 'U'}</div>
                     <div class="chat-info">
-                        <div class="chat-name">${chat.userName}</div>
-                        <div class="chat-preview">${chat.lastMessage}</div>
+                        <div class="chat-name">${otherUser ? otherUser.username : 'Пользователь'}</div>
+                        <div class="chat-preview">${chat.lastMessage || 'Нет сообщений'}</div>
                     </div>
                 `;
                 
@@ -1697,8 +2351,8 @@
                     });
                     chatItem.classList.add('active');
                     
-                    document.getElementById('currentChatName').textContent = chat.userName;
-                    document.getElementById('currentChatAvatar').textContent = chat.avatar;
+                    document.getElementById('currentChatName').textContent = otherUser ? otherUser.username : 'Пользователь';
+                    document.getElementById('currentChatAvatar').textContent = otherUser ? otherUser.avatar : 'U';
                     
                     // Enable message input
                     messageInput.disabled = false;
@@ -1715,37 +2369,17 @@
 
         // Load chat messages
         function loadChatMessages(chatId) {
-            // In a real app, this would fetch messages from a server
-            // For demo, we'll create sample messages
-            const messages = [
-                {
-                    id: 1,
-                    text: 'Добрый день! Интересует ваш аккаунт Steam',
-                    sender: 'other',
-                    time: '10:30'
-                },
-                {
-                    id: 2,
-                    text: 'Здравствуйте! Да, аккаунт еще доступен',
-                    sender: 'me',
-                    time: '10:32'
-                },
-                {
-                    id: 3,
-                    text: 'Можете рассказать подробнее о скинах?',
-                    sender: 'other',
-                    time: '10:33'
-                }
-            ];
+            const chat = RocketMarketAPI.getChatById(chatId);
+            if (!chat) return;
             
             // Render messages
             chatMessages.innerHTML = '';
-            messages.forEach(message => {
+            chat.messages.forEach(message => {
                 const messageEl = document.createElement('div');
-                messageEl.className = `message ${message.sender === 'me' ? 'own' : ''}`;
+                messageEl.className = `message ${message.senderId === state.currentUser.id ? 'own' : ''}`;
                 messageEl.innerHTML = `
                     <div class="message-bubble">${message.text}</div>
-                    <div class="message-time">${message.time}</div>
+                    <div class="message-time">${new Date(message.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                 `;
                 chatMessages.appendChild(messageEl);
             });
@@ -1759,26 +2393,14 @@
             const text = messageInput.value.trim();
             if (!text || !state.currentChat) return;
             
-            // Create message object
-            const message = {
-                id: Date.now(),
-                text: text,
-                sender: 'me',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
+            // Add message to chat
+            RocketMarketAPI.addMessage(state.currentChat.id, state.currentUser.id, text);
             
-            // Add to chat
-            const messageEl = document.createElement('div');
-            messageEl.className = 'message own';
-            messageEl.innerHTML = `
-                <div class="message-bubble">${message.text}</div>
-                <div class="message-time">${message.time}</div>
-            `;
-            chatMessages.appendChild(messageEl);
+            // Reload chat messages
+            loadChatMessages(state.currentChat.id);
             
-            // Update last message in chat list
-            state.currentChat.lastMessage = text;
-            renderChatList();
+            // Update chat list
+            loadChats();
             
             // Clear input and scroll to bottom
             messageInput.value = '';
@@ -1790,7 +2412,7 @@
             if (!state.currentUser) return;
             
             document.getElementById('profileUsername').textContent = state.currentUser.username;
-            document.getElementById('profileAvatar').textContent = state.currentUser.username.charAt(0).toUpperCase();
+            document.getElementById('profileAvatar').textContent = state.currentUser.avatar;
             document.getElementById('profileJoinDate').textContent = `на Rocket Market с ${state.currentUser.joinDate}`;
             document.getElementById('profileProducts').textContent = state.currentUser.products;
             document.getElementById('profilePurchases').textContent = state.currentUser.purchases;
@@ -1805,8 +2427,7 @@
             const activeListings = document.getElementById('activeListings');
             activeListings.innerHTML = '';
             
-            // In a real app, this would fetch user's listings from a server
-            const userListings = state.products.filter(product => product.seller === state.currentUser.username);
+            const userListings = RocketMarketAPI.getProductsBySeller(state.currentUser.id);
             
             if (userListings.length === 0) {
                 activeListings.innerHTML = '<p>Нет активных объявлений</p>';
@@ -1847,7 +2468,7 @@
         // Load completed listings
         function loadCompletedListings() {
             const completedListings = document.getElementById('completedListings');
-            completedListings.innerHTML = '<p>Завершённые сделки появятся здесь</p>';
+            completedListings.innerHTML = '<p>Завершённые сделки появятся здесь после совершения покупок</p>';
         }
 
         // Load reviews
@@ -1866,15 +2487,23 @@
 
         // Load transaction history
         function loadTransactionHistory() {
+            if (!state.currentUser) return;
+            
+            const transactions = RocketMarketAPI.getTransactionsByUser(state.currentUser.id);
             const transactionList = document.getElementById('transactionList');
             transactionList.innerHTML = '';
             
-            state.transactions.forEach(transaction => {
+            if (transactions.length === 0) {
+                transactionList.innerHTML = '<p>Нет операций</p>';
+                return;
+            }
+            
+            transactions.reverse().forEach(transaction => {
                 const transactionItem = document.createElement('div');
                 transactionItem.className = 'transaction-item';
                 transactionItem.innerHTML = `
                     <div class="transaction-info">
-                        <div class="transaction-name">${transaction.name}</div>
+                        <div class="transaction-name">${transaction.description}</div>
                         <div class="transaction-date">${transaction.date}</div>
                     </div>
                     <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
@@ -1899,18 +2528,13 @@
                 return;
             }
             
-            // Update balance
-            state.currentUser.balance += parseInt(amount);
-            localStorage.setItem('rocketMarketUser', JSON.stringify(state.currentUser));
-            
-            // Add transaction
-            state.transactions.unshift({
-                id: Date.now(),
-                name: 'Пополнение баланса',
-                amount: parseInt(amount),
-                date: new Date().toISOString().split('T')[0],
-                type: 'deposit'
-            });
+            // Create transaction
+            RocketMarketAPI.createTransaction(
+                state.currentUser.id, 
+                'deposit', 
+                parseInt(amount), 
+                'Пополнение баланса'
+            );
             
             // Update UI
             loadWalletData();
@@ -1936,18 +2560,13 @@
                 return;
             }
             
-            // Update balance
-            state.currentUser.balance -= parseInt(amount);
-            localStorage.setItem('rocketMarketUser', JSON.stringify(state.currentUser));
-            
-            // Add transaction
-            state.transactions.unshift({
-                id: Date.now(),
-                name: 'Вывод средств',
-                amount: -parseInt(amount),
-                date: new Date().toISOString().split('T')[0],
-                type: 'withdrawal'
-            });
+            // Create transaction
+            RocketMarketAPI.createTransaction(
+                state.currentUser.id, 
+                'withdrawal', 
+                parseInt(amount), 
+                'Вывод средств'
+            );
             
             // Update UI
             loadWalletData();
@@ -1961,8 +2580,7 @@
             
             if (!state.currentUser) return;
             
-            // In a real app, this would fetch user's listings from a server
-            const userListings = state.products.filter(product => product.seller === state.currentUser.username);
+            const userListings = RocketMarketAPI.getProductsBySeller(state.currentUser.id);
             
             if (userListings.length === 0) {
                 myListings.innerHTML = '<p>У вас нет активных объявлений</p>';
