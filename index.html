@@ -1009,6 +1009,54 @@
             cursor: pointer;
         }
 
+        /* Subcategories */
+        .subcategories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .subcategory-btn {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text);
+        }
+
+        .subcategory-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Game Icons */
+        .game-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        /* Order Confirmation */
+        .order-confirmation {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .main-content {
@@ -1135,6 +1183,9 @@
                 <!-- Home Page -->
                 <div class="page active" id="home">
                     <h2>Популярные товары</h2>
+                    <div class="subcategories" id="homeSubcategories">
+                        <!-- Subcategories will be loaded here -->
+                    </div>
                     <div class="products-grid" id="featuredProducts">
                         <!-- Featured products will be loaded here -->
                     </div>
@@ -1158,9 +1209,14 @@
                         </div>
                         <div class="form-group">
                             <label for="productCategory">Категория</label>
-                            <select id="productCategory">
-                                <option value="">Выберите категорию</option>
+                            <div class="categories-select" id="categoriesSelect">
                                 <!-- Categories will be populated by JS -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="productSubcategory">Подкатегория</label>
+                            <select id="productSubcategory">
+                                <option value="">Выберите подкатегорию</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1288,6 +1344,14 @@
                     <div class="product-detail" id="productDetailContent">
                         <!-- Product detail will be loaded here -->
                     </div>
+                    <div class="order-confirmation" id="orderConfirmation" style="display: none;">
+                        <h3>Подтверждение заказа</h3>
+                        <p>После получения товара, пожалуйста, подтвердите выполнение заказа.</p>
+                        <div class="confirmation-buttons">
+                            <button class="btn" id="confirmOrderBtn">Подтвердить получение</button>
+                            <button class="btn" id="reportIssueBtn" style="background: var(--danger);">Сообщить о проблеме</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Auth Pages -->
@@ -1304,9 +1368,9 @@
                         </div>
                         <button class="btn btn-block" id="loginSubmitBtn">Войти</button>
                         <div class="oauth-buttons">
-                            <div id="vkAuthContainer"></div>
+                            <button class="oauth-btn" id="vkAuthBtn"><i class="fab fa-vk"></i> Войти через VK</button>
                             <button class="oauth-btn" id="telegramAuthBtn"><i class="fab fa-telegram"></i> Войти через Telegram</button>
-                            <div class="g-signin2" data-onsuccess="onGoogleSignIn"></div>
+                            <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
                         </div>
                         <p style="text-align: center; margin-top: 15px;">
                             Нет аккаунта? <a href="#" id="goToRegister">Зарегистрироваться</a>
@@ -1335,9 +1399,9 @@
                         </div>
                         <button class="btn btn-block" id="registerSubmitBtn">Зарегистрироваться</button>
                         <div class="oauth-buttons">
-                            <div id="vkAuthContainerRegister"></div>
+                            <button class="oauth-btn" id="vkAuthBtnRegister"><i class="fab fa-vk"></i> Зарегистрироваться через VK</button>
                             <button class="oauth-btn" id="telegramAuthBtnRegister"><i class="fab fa-telegram"></i> Зарегистрироваться через Telegram</button>
-                            <div class="g-signin2" data-onsuccess="onGoogleSignIn"></div>
+                            <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
                         </div>
                         <p style="text-align: center; margin-top: 15px;">
                             Уже есть аккаунт? <a href="#" id="goToLogin">Войти</a>
@@ -1357,6 +1421,7 @@
             chats: JSON.parse(localStorage.getItem('rocketMarketChats')) || [],
             transactions: JSON.parse(localStorage.getItem('rocketMarketTransactions')) || [],
             likes: JSON.parse(localStorage.getItem('rocketMarketLikes')) || [],
+            orders: JSON.parse(localStorage.getItem('rocketMarketOrders')) || [],
             
             // Save data to localStorage
             saveData() {
@@ -1365,6 +1430,7 @@
                 localStorage.setItem('rocketMarketChats', JSON.stringify(this.chats));
                 localStorage.setItem('rocketMarketTransactions', JSON.stringify(this.transactions));
                 localStorage.setItem('rocketMarketLikes', JSON.stringify(this.likes));
+                localStorage.setItem('rocketMarketOrders', JSON.stringify(this.orders));
             },
             
             // User methods
@@ -1438,6 +1504,14 @@
                 return this.products.filter(product => product.sellerId === sellerId);
             },
             
+            getProductsByCategory(category, subcategory = null) {
+                let filtered = this.products.filter(product => product.category === category);
+                if (subcategory) {
+                    filtered = filtered.filter(product => product.subcategory === subcategory);
+                }
+                return filtered;
+            },
+            
             deleteProduct(id) {
                 const productIndex = this.products.findIndex(product => product.id === id);
                 if (productIndex !== -1) {
@@ -1464,6 +1538,42 @@
                     return product;
                 }
                 return null;
+            },
+            
+            // Order methods
+            createOrder(productId, buyerId) {
+                const product = this.getProductById(productId);
+                if (!product) return null;
+                
+                const order = {
+                    id: Date.now(),
+                    productId,
+                    buyerId,
+                    sellerId: product.sellerId,
+                    price: product.price,
+                    status: 'pending', // pending, completed, cancelled
+                    createdAt: new Date().toISOString(),
+                    completedAt: null
+                };
+                
+                this.orders.push(order);
+                this.saveData();
+                return order;
+            },
+            
+            completeOrder(orderId) {
+                const order = this.orders.find(o => o.id === orderId);
+                if (order) {
+                    order.status = 'completed';
+                    order.completedAt = new Date().toISOString();
+                    this.saveData();
+                    return order;
+                }
+                return null;
+            },
+            
+            getOrdersByUser(userId) {
+                return this.orders.filter(order => order.buyerId === userId || order.sellerId === userId);
             },
             
             // Chat methods
@@ -1562,68 +1672,32 @@
         // Application State
         const state = {
             currentUser: null,
+            currentCategory: 'games',
+            currentSubcategory: null,
             categories: [
-                { id: 'games', name: 'Игры', icon: 'gamepad' },
-                { id: 'applications', name: 'Приложения', icon: 'mobile-alt' },
-                { id: 'mobile-games', name: 'Мобильные игры', icon: 'mobile' },
-                { id: 'steam', name: 'Steam', icon: 'steam' },
-                { id: 'telegram', name: 'Telegram', icon: 'telegram' },
-                { id: 'playstation', name: 'PlayStation', icon: 'playstation' },
-                { id: 'tiktok', name: 'TikTok', icon: 'tiktok' },
-                { id: 'app-store', name: 'App Store', icon: 'app-store' },
-                { id: 'xbox', name: 'Xbox', icon: 'xbox' },
-                { id: 'discord', name: 'Discord', icon: 'discord' },
-                { id: 'windows', name: 'Windows', icon: 'windows' },
-                { id: 'spotify', name: 'Spotify', icon: 'spotify' },
-                { id: 'chatgpt', name: 'ChatGPT', icon: 'robot' },
-                { id: 'neural-networks', name: 'Нейросети', icon: 'brain' },
-                { id: 'other-apps', name: 'Другие приложения', icon: 'ellipsis-h' },
-                { id: 'google-play', name: 'Google Play', icon: 'google-play' },
-                { id: 'nintendo', name: 'Nintendo', icon: 'game-console' },
-                { id: 'fl-studio', name: 'FL Studio', icon: 'music' },
-                { id: 'faceit', name: 'Faceit', icon: 'trophy' },
-                { id: 'adobe', name: 'Adobe', icon: 'creative-cloud' },
-                { id: 'razer-gold', name: 'Razer Gold', icon: 'gamepad' },
-                { id: 'likee', name: 'Likee', icon: 'video' },
-                { id: 'youtube', name: 'YouTube', icon: 'youtube' },
-                { id: 'battle-net', name: 'Battle.net', icon: 'battle-net' },
-                { id: 'vk', name: 'ВКонтакте', icon: 'vk' },
-                { id: 'exitlag', name: 'ExitLag', icon: 'signal' },
-                { id: 'rockstar-games', name: 'Rockstar Games', icon: 'rocket' },
-                { id: 'itunes', name: 'iTunes', icon: 'itunes' },
-                { id: 'capcut', name: 'CapCut', icon: 'cut' },
-                { id: 'ea-play', name: 'EA Play', icon: 'gamepad' },
-                { id: 'epic-games', name: 'Epic Games', icon: 'epic-games' },
-                { id: 'design', name: 'Дизайн', icon: 'paint-brush' },
-                { id: 'soundcloud', name: 'Soundcloud', icon: 'soundcloud' },
-                { id: 'twitch', name: 'Twitch', icon: 'twitch' },
-                { id: 'netflix', name: 'Netflix', icon: 'netflix' },
-                { id: 'microsoft-store', name: 'Microsoft Store', icon: 'microsoft' },
-                { id: 'sora', name: 'Sora', icon: 'video' },
-                { id: 'wallpaper-engine', name: 'Wallpaper Engine', icon: 'image' },
-                { id: 'zoom', name: 'Zoom', icon: 'video' },
-                { id: 'ubisoft', name: 'Ubisoft', icon: 'ubisoft' },
-                { id: 'geforce-now', name: 'GeForce NOW', icon: 'nvidia' },
-                { id: 'deepseek', name: 'DeepSeek', icon: 'robot' },
-                { id: 'obs-studio', name: 'OBS Studio', icon: 'video' },
-                { id: 'teamspeak', name: 'TeamSpeak', icon: 'microphone' },
-                { id: 'bandicam', name: 'Bandicam', icon: 'video' },
-                { id: 'snapchat', name: 'Snapchat', icon: 'snapchat' },
-                { id: 'kick', name: 'Kick', icon: 'broadcast-tower' },
-                { id: 'yappy', name: 'Yappy', icon: 'comment' },
-                { id: 'hosting', name: 'Хостинг', icon: 'server' },
-                { id: 'trovo', name: 'Trovo', icon: 'broadcast-tower' },
-                { id: 'skype', name: 'Skype', icon: 'skype' },
-                { id: 'element', name: 'Element', icon: 'comments' },
-                { id: 'revolt', name: 'Revolt', icon: 'comments' },
-                { id: 'guilded', name: 'Guilded', icon: 'users' },
-                { id: 'zen', name: 'Дзен', icon: 'yin-yang' },
-                { id: 'crosshair-x', name: 'Crosshair X', icon: 'crosshairs' },
-                { id: 'audio-editors', name: 'Аудиоредакторы', icon: 'music' },
-                { id: 'leonardo-ai', name: 'Leonardo AI', icon: 'palette' }
+                { id: 'games', name: 'Игры', icon: 'gamepad', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'applications', name: 'Приложения', icon: 'mobile-alt', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'mobile-games', name: 'Мобильные игры', icon: 'mobile', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'steam', name: 'Steam', icon: 'steam', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'telegram', name: 'Telegram', icon: 'telegram', subcategories: ['donate', 'accounts', 'boost', 'services', 'other', 'stars', 'bots'] },
+                { id: 'playstation', name: 'PlayStation', icon: 'playstation', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'tiktok', name: 'TikTok', icon: 'tiktok', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'app-store', name: 'App Store', icon: 'app-store', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'xbox', name: 'Xbox', icon: 'xbox', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] },
+                { id: 'discord', name: 'Discord', icon: 'discord', subcategories: ['donate', 'accounts', 'boost', 'services', 'other'] }
             ],
+            subcategoryNames: {
+                'donate': 'Донат',
+                'accounts': 'Аккаунты',
+                'boost': 'Буст',
+                'services': 'Услуги',
+                'other': 'Другое',
+                'stars': 'Звезды',
+                'bots': 'Боты'
+            },
             currentChat: null,
-            currentProduct: null
+            currentProduct: null,
+            currentOrder: null
         };
 
         // DOM Elements
@@ -1640,7 +1714,8 @@
         const loginSubmitBtn = document.getElementById('loginSubmitBtn');
         const registerSubmitBtn = document.getElementById('registerSubmitBtn');
         const categoriesGrid = document.getElementById('categoriesGrid');
-        const productCategory = document.getElementById('productCategory');
+        const categoriesSelect = document.getElementById('categoriesSelect');
+        const productSubcategory = document.getElementById('productSubcategory');
         const createListingBtn = document.getElementById('createListingBtn');
         const chatList = document.getElementById('chatList');
         const chatMessages = document.getElementById('chatMessages');
@@ -1650,6 +1725,10 @@
         const withdrawBtn = document.getElementById('withdrawBtn');
         const profileTabs = document.querySelectorAll('.profile-tab');
         const themeToggle = document.getElementById('themeToggle');
+        const homeSubcategories = document.getElementById('homeSubcategories');
+        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+        const reportIssueBtn = document.getElementById('reportIssueBtn');
+        const orderConfirmation = document.getElementById('orderConfirmation');
 
         // Initialize the application
         function init() {
@@ -1673,6 +1752,7 @@
         function loadInitialData() {
             renderCategories();
             populateCategorySelect();
+            renderSubcategories();
             renderFeaturedProducts();
         }
 
@@ -1722,6 +1802,9 @@
             // Create listing
             createListingBtn.addEventListener('click', handleCreateListing);
 
+            // Category selection
+            document.getElementById('productCategory').addEventListener('change', updateSubcategories);
+
             // Chat
             sendMessageBtn.addEventListener('click', sendMessage);
             messageInput.addEventListener('keypress', (e) => {
@@ -1747,6 +1830,9 @@
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const category = link.getAttribute('data-category');
+                    state.currentCategory = category;
+                    state.currentSubcategory = null;
+                    renderSubcategories();
                     filterProductsByCategory(category);
                     showPage('home');
                 });
@@ -1756,8 +1842,14 @@
             themeToggle.addEventListener('change', toggleTheme);
 
             // OAuth buttons
+            document.getElementById('vkAuthBtn').addEventListener('click', handleVKAuth);
+            document.getElementById('vkAuthBtnRegister').addEventListener('click', handleVKAuth);
             document.getElementById('telegramAuthBtn').addEventListener('click', handleTelegramAuth);
             document.getElementById('telegramAuthBtnRegister').addEventListener('click', handleTelegramAuth);
+
+            // Order confirmation
+            confirmOrderBtn.addEventListener('click', handleConfirmOrder);
+            reportIssueBtn.addEventListener('click', handleReportIssue);
         }
 
         // Initialize theme
@@ -1899,17 +1991,38 @@
             document.getElementById('registerConfirmPassword').value = '';
         }
 
-        // Handle logout
-        function handleLogout() {
-            state.currentUser = null;
-            localStorage.removeItem('rocketMarketCurrentUser');
-            updateUIForAuth(false);
+        // Handle VK OAuth
+        function handleVKAuth() {
+            // In a real implementation, this would use VK OAuth
+            // For demo purposes, we'll create a mock user
+            const vkUser = {
+                id: Date.now(),
+                username: 'VKUser',
+                email: `vk${Date.now()}@example.com`,
+                password: 'vk',
+                joinDate: new Date().toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }),
+                balance: 0,
+                products: 0,
+                purchases: 0,
+                sales: 0,
+                avatar: 'V'
+            };
+            
+            // Check if user already exists
+            let user = RocketMarketAPI.users.find(u => u.email === vkUser.email);
+            if (!user) {
+                user = RocketMarketAPI.registerUser(vkUser);
+            }
+            
+            state.currentUser = user;
+            localStorage.setItem('rocketMarketCurrentUser', user.id);
+            updateUIForAuth(true);
             showPage('home');
         }
 
         // Handle Telegram OAuth
         function handleTelegramAuth() {
-            // In a real implementation, this would redirect to Telegram OAuth
+            // In a real implementation, this would use Telegram Widget
             // For demo purposes, we'll create a mock user
             const telegramUser = {
                 id: Date.now(),
@@ -1962,6 +2075,18 @@
             localStorage.setItem('rocketMarketCurrentUser', user.id);
             updateUIForAuth(true);
             showPage('home');
+            
+            // Sign out from Google to allow switching accounts
+            const auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut();
+        }
+
+        // Handle logout
+        function handleLogout() {
+            state.currentUser = null;
+            localStorage.removeItem('rocketMarketCurrentUser');
+            updateUIForAuth(false);
+            showPage('home');
         }
 
         // Render categories
@@ -1978,6 +2103,9 @@
                     <div class="category-name">${category.name}</div>
                 `;
                 categoryCard.addEventListener('click', () => {
+                    state.currentCategory = category.id;
+                    state.currentSubcategory = null;
+                    renderSubcategories();
                     filterProductsByCategory(category.id);
                     showPage('home');
                 });
@@ -1987,6 +2115,7 @@
 
         // Populate category select
         function populateCategorySelect() {
+            const productCategory = document.getElementById('productCategory');
             productCategory.innerHTML = '<option value="">Выберите категорию</option>';
             
             state.categories.forEach(category => {
@@ -1997,15 +2126,54 @@
             });
         }
 
+        // Update subcategories based on selected category
+        function updateSubcategories() {
+            const categoryId = document.getElementById('productCategory').value;
+            const subcategorySelect = document.getElementById('productSubcategory');
+            subcategorySelect.innerHTML = '<option value="">Выберите подкатегорию</option>';
+            
+            if (categoryId) {
+                const category = state.categories.find(c => c.id === categoryId);
+                if (category) {
+                    category.subcategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub;
+                        option.textContent = state.subcategoryNames[sub];
+                        subcategorySelect.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        // Render subcategories
+        function renderSubcategories() {
+            homeSubcategories.innerHTML = '';
+            
+            const category = state.categories.find(c => c.id === state.currentCategory);
+            if (category) {
+                category.subcategories.forEach(sub => {
+                    const subBtn = document.createElement('button');
+                    subBtn.className = `subcategory-btn ${state.currentSubcategory === sub ? 'active' : ''}`;
+                    subBtn.textContent = state.subcategoryNames[sub];
+                    subBtn.addEventListener('click', () => {
+                        state.currentSubcategory = state.currentSubcategory === sub ? null : sub;
+                        renderSubcategories();
+                        filterProductsByCategory(state.currentCategory, state.currentSubcategory);
+                    });
+                    homeSubcategories.appendChild(subBtn);
+                });
+            }
+        }
+
         // Render featured products
         function renderFeaturedProducts() {
             const featuredProducts = document.getElementById('featuredProducts');
             featuredProducts.innerHTML = '';
             
-            const products = RocketMarketAPI.getProducts();
+            const products = RocketMarketAPI.getProductsByCategory(state.currentCategory, state.currentSubcategory);
             
             if (products.length === 0) {
-                featuredProducts.innerHTML = '<p>Пока нет товаров. Будьте первым, кто разместит объявление!</p>';
+                featuredProducts.innerHTML = '<p>Пока нет товаров в этой категории. Будьте первым, кто разместит объявление!</p>';
                 return;
             }
             
@@ -2094,6 +2262,9 @@
             }
             
             if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${product.price} ₽?`)) {
+                // Create order
+                const order = RocketMarketAPI.createOrder(productId, state.currentUser.id);
+                
                 // Create transaction
                 RocketMarketAPI.createTransaction(
                     state.currentUser.id, 
@@ -2116,7 +2287,12 @@
                 // Remove product
                 RocketMarketAPI.deleteProduct(productId);
                 
-                alert('Покупка совершена успешно!');
+                // Show order confirmation
+                state.currentOrder = order;
+                showProductDetail(productId);
+                orderConfirmation.style.display = 'block';
+                
+                alert('Покупка совершена успешно! Ожидайте выполнения заказа.');
                 renderFeaturedProducts();
                 if (document.getElementById('my-listings').classList.contains('active')) {
                     loadMyListings();
@@ -2238,13 +2414,40 @@
             });
             
             showPage('product-detail');
+            
+            // Hide order confirmation if this is not the purchased product
+            if (!state.currentOrder || state.currentOrder.productId !== productId) {
+                orderConfirmation.style.display = 'none';
+            }
+        }
+
+        // Handle confirm order
+        function handleConfirmOrder() {
+            if (!state.currentOrder) return;
+            
+            const completedOrder = RocketMarketAPI.completeOrder(state.currentOrder.id);
+            if (completedOrder) {
+                alert('Заказ подтвержден! Спасибо за покупку.');
+                orderConfirmation.style.display = 'none';
+                state.currentOrder = null;
+            }
+        }
+
+        // Handle report issue
+        function handleReportIssue() {
+            if (!state.currentOrder) return;
+            
+            alert('Проблема с заказом зарегистрирована. С вами свяжется служба поддержки.');
+            orderConfirmation.style.display = 'none';
+            state.currentOrder = null;
         }
 
         // Filter products by category
-        function filterProductsByCategory(categoryId) {
-            const products = categoryId ? 
-                RocketMarketAPI.getProducts().filter(product => product.category === categoryId) : 
-                RocketMarketAPI.getProducts();
+        function filterProductsByCategory(categoryId, subcategory = null) {
+            state.currentCategory = categoryId;
+            state.currentSubcategory = subcategory;
+            
+            const products = RocketMarketAPI.getProductsByCategory(categoryId, subcategory);
             
             const featuredProducts = document.getElementById('featuredProducts');
             featuredProducts.innerHTML = '';
@@ -2270,11 +2473,12 @@
             
             const title = document.getElementById('productTitle').value;
             const category = document.getElementById('productCategory').value;
+            const subcategory = document.getElementById('productSubcategory').value;
             const description = document.getElementById('productDescription').value;
             const price = document.getElementById('productPrice').value;
             const imageUrl = document.getElementById('productImageUrl').value;
             
-            if (!title || !category || !description || !price) {
+            if (!title || !category || !subcategory || !description || !price) {
                 alert('Пожалуйста, заполните все обязательные поля');
                 return;
             }
@@ -2283,6 +2487,7 @@
             const newProduct = RocketMarketAPI.createProduct({
                 title,
                 category,
+                subcategory,
                 description,
                 price: parseInt(price),
                 imageUrl: imageUrl || null,
@@ -2295,6 +2500,7 @@
             // Reset form
             document.getElementById('productTitle').value = '';
             document.getElementById('productCategory').value = '';
+            document.getElementById('productSubcategory').value = '';
             document.getElementById('productDescription').value = '';
             document.getElementById('productPrice').value = '';
             document.getElementById('productImageUrl').value = '';
