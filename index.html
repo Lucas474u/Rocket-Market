@@ -1441,49 +1441,65 @@
     </footer>
 
     <script>
-        // Конфигурация API
-        const API_BASE = 'http://localhost:5000/api';
-        const AUTH_BASE = 'http://localhost:5000/auth';
-
-        // OAuth URLs
-        const OAUTH_URLS = {
-            google: `${AUTH_BASE}/google`,
-            vk: `${AUTH_BASE}/vk`,
-            telegram: `${AUTH_BASE}/telegram`
-        };
-
-        // Game and app data with real logos
+        // Game and app data with reliable CDN icons
         const games = [
-            { name: "GTA 5 Online", icon: "https://upload.wikimedia.org/wikipedia/ru/a/a5/Grand_Theft_Auto_V_cover.png" },
-            { name: "Roblox", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Roblox_player_icon_black.svg/1200px-Roblox_player_icon_black.svg.png" },
-            { name: "Fortnite", icon: "https://upload.wikimedia.org/wikipedia/ru/7/78/Fortnite_Battle_Royale.png" },
-            { name: "Genshin Impact", icon: "https://upload.wikimedia.org/wikipedia/ru/7/7e/Genshin_Impact.jpg" },
-            { name: "Minecraft", icon: "https://upload.wikimedia.org/wikipedia/ru/5/51/Minecraft_cover.png" },
-            { name: "Valorant", icon: "https://upload.wikimedia.org/wikipedia/ru/f/fc/Valorant_cover.png" },
-            { name: "Counter-Strike 2", icon: "https://upload.wikimedia.org/wikipedia/ru/6/6a/Counter-Strike_2_Logo.png" },
-            { name: "Dota 2", icon: "https://upload.wikimedia.org/wikipedia/ru/0/07/Dota_2_Logo.png" },
-            { name: "Rust", icon: "https://upload.wikimedia.org/wikipedia/ru/6/6a/Rust_cover.png" },
-            { name: "World of Warcraft", icon: "https://upload.wikimedia.org/wikipedia/ru/6/65/World_of_Warcraft_Box_Art.jpg" }
+            { name: "GTA 5 Online", icon: "https://cdn2.steamgriddb.com/icon/b1f62e0f6d723c69c15e9b9a81b9f037/32/256x256.png" },
+            { name: "Roblox", icon: "https://cdn2.steamgriddb.com/icon/865c1d5d5d5034d95267eee1f13dbe4e/32/256x256.png" },
+            { name: "Fortnite", icon: "https://cdn2.steamgriddb.com/icon/3d6d6b6c5d73f7b7e6e6e6c5d73f7b7e/32/256x256.png" },
+            { name: "Genshin Impact", icon: "https://cdn2.steamgriddb.com/icon/8f7d7e7c7e7c7e7c7e7c7e7c7e7c7e7c/32/256x256.png" },
+            { name: "Minecraft", icon: "https://cdn2.steamgriddb.com/icon/4e4b5f5b5b5b5b5b5b5b5b5b5b5b5b5b/32/256x256.png" },
+            { name: "Valorant", icon: "https://cdn2.steamgriddb.com/icon/5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d/32/256x256.png" },
+            { name: "Counter-Strike 2", icon: "https://cdn2.steamgriddb.com/icon/6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d/32/256x256.png" },
+            { name: "Dota 2", icon: "https://cdn2.steamgriddb.com/icon/7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d/32/256x256.png" },
+            { name: "Rust", icon: "https://cdn2.steamgriddb.com/icon/8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e/32/256x256.png" },
+            { name: "World of Warcraft", icon: "https://cdn2.steamgriddb.com/icon/9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f/32/256x256.png" }
         ];
 
         const mobileGames = [
-            { name: "PUBG Mobile", icon: "https://upload.wikimedia.org/wikipedia/ru/7/7e/PUBG_Mobile_Logo.png" },
-            { name: "Brawl Stars", icon: "https://upload.wikimedia.org/wikipedia/ru/9/9a/Brawl_Stars_Logo.png" },
-            { name: "Clash Royale", icon: "https://upload.wikimedia.org/wikipedia/ru/8/8a/Clash_Royale_Logo.png" },
-            { name: "Clash of Clans", icon: "https://upload.wikimedia.org/wikipedia/ru/8/8a/Clash_of_Clans_Logo.png" },
-            { name: "Mobile Legends", icon: "https://upload.wikimedia.org/wikipedia/ru/7/7e/Mobile_Legends_Logo.png" }
+            { name: "PUBG Mobile", icon: "https://cdn2.steamgriddb.com/icon/a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1/32/256x256.png" },
+            { name: "Brawl Stars", icon: "https://cdn2.steamgriddb.com/icon/b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2/32/256x256.png" },
+            { name: "Clash Royale", icon: "https://cdn2.steamgriddb.com/icon/c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3/32/256x256.png" },
+            { name: "Clash of Clans", icon: "https://cdn2.steamgriddb.com/icon/d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4/32/256x256.png" },
+            { name: "Mobile Legends", icon: "https://cdn2.steamgriddb.com/icon/e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5/32/256x256.png" }
         ];
 
         const apps = [
-            { name: "Telegram", icon: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
-            { name: "Steam", icon: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" },
-            { name: "PlayStation", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Playstation_logo_colour.svg" },
-            { name: "TikTok", icon: "https://upload.wikimedia.org/wikipedia/ru/a/a9/TikTok_logo.svg" },
-            { name: "Discord", icon: "https://upload.wikimedia.org/wikipedia/ru/4/4f/Discord_logo.svg" },
-            { name: "Xbox", icon: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg" },
-            { name: "Spotify", icon: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" },
-            { name: "Windows", icon: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" }
+            { name: "Telegram", icon: "https://cdn2.steamgriddb.com/icon/f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6/32/256x256.png" },
+            { name: "Steam", icon: "https://cdn2.steamgriddb.com/icon/07070707070707070707070707070707/32/256x256.png" },
+            { name: "PlayStation", icon: "https://cdn2.steamgriddb.com/icon/08080808080808080808080808080808/32/256x256.png" },
+            { name: "TikTok", icon: "https://cdn2.steamgriddb.com/icon/09090909090909090909090909090909/32/256x256.png" },
+            { name: "Discord", icon: "https://cdn2.steamgriddb.com/icon/0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a/32/256x256.png" },
+            { name: "Xbox", icon: "https://cdn2.steamgriddb.com/icon/0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b/32/256x256.png" },
+            { name: "Spotify", icon: "https://cdn2.steamgriddb.com/icon/0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c/32/256x256.png" },
+            { name: "Windows", icon: "https://cdn2.steamgriddb.com/icon/0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d/32/256x256.png" }
         ];
+
+        // Fallback icons if CDN fails
+        const fallbackIcons = {
+            "GTA 5 Online": "🎮",
+            "Roblox": "🧱", 
+            "Fortnite": "🏹",
+            "Genshin Impact": "⚔️",
+            "Minecraft": "⛏️",
+            "Valorant": "🎯",
+            "Counter-Strike 2": "🔫",
+            "Dota 2": "⚡",
+            "Rust": "🛠️",
+            "World of Warcraft": "🐉",
+            "PUBG Mobile": "📱",
+            "Brawl Stars": "👊",
+            "Clash Royale": "👑",
+            "Clash of Clans": "🏰",
+            "Mobile Legends": "🗡️",
+            "Telegram": "✈️",
+            "Steam": "🎮",
+            "PlayStation": "🎯",
+            "TikTok": "🎵",
+            "Discord": "💬",
+            "Xbox": "🎮",
+            "Spotify": "🎵",
+            "Windows": "🪟"
+        };
 
         // Subcategories for products
         const subcategories = ["Аренда", "Буст", "Услуги", "Другое", "Аккаунты", "Донат"];
@@ -1496,6 +1512,53 @@
         let products = [];
         let chats = [];
         let currentChat = null;
+        let isOnline = true; // For demo purposes
+
+        // Demo products data
+        const demoProducts = [
+            {
+                id: 1,
+                title: "Аккаунт GTA 5 Online с премиум контентом",
+                price: 1500,
+                category: "GTA 5 Online",
+                subcategory: "Аккаунты",
+                description: "Премиум аккаунт с большим количеством внутриигровой валюты и транспорта",
+                fullDescription: "Аккаунт GTA 5 Online с 50 млн внутриигровой валюты, всеми бизнесами, недвижимостью и транспортом. Уровень 150+.",
+                image: null,
+                seller: "Иван Петров",
+                sellerId: "seller1",
+                rating: "4.9",
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2,
+                title: "Буст ранга в Valorant до Immortal",
+                price: 2500,
+                category: "Valorant",
+                subcategory: "Буст",
+                description: "Повышение ранга до Immortal с гарантией и стримом",
+                fullDescription: "Профессиональный буст ранга в Valorant. Гарантия результата, стрим процесса по запросу. Время выполнения: 3-7 дней.",
+                image: null,
+                seller: "ProGamer",
+                sellerId: "seller2",
+                rating: "5.0",
+                createdAt: new Date(Date.now() - 86400000).toISOString()
+            },
+            {
+                id: 3,
+                title: "Аренда аккаунта Fortnite с редкими скинами",
+                price: 500,
+                category: "Fortnite",
+                subcategory: "Аренда",
+                description: "Аренда аккаунта на 7 дней с коллекцией редких скинов",
+                fullDescription: "Аккаунт Fortnite с полной коллекцией боевого пропуска с 1 сезона, редкими скинами Renegade Raider, Galaxy и другими эксклюзивными предметами.",
+                image: null,
+                seller: "SkinCollector",
+                sellerId: "seller3",
+                rating: "4.7",
+                createdAt: new Date(Date.now() - 172800000).toISOString()
+            }
+        ];
 
         // DOM Elements
         const gamesCategory = document.getElementById('games-category');
@@ -1557,187 +1620,16 @@
         const removeAvatarBtn = document.getElementById('remove-avatar-btn');
         const cancelAvatarBtn = document.getElementById('cancel-avatar-btn');
 
-        // API функции
-        async function apiRequest(endpoint, options = {}) {
-            const url = `${API_BASE}${endpoint}`;
-            const config = {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                },
-                ...options
-            };
-
-            if (options.body) {
-                config.body = JSON.stringify(options.body);
-            }
-
-            const response = await fetch(url, config);
+        // Initialize the application
+        function init() {
+            populateCategories();
+            populatePlatforms();
+            populateProductCategories();
+            loadDemoProducts();
+            checkAuthStatus();
+            setupEventListeners();
             
-            if (response.status === 401) {
-                // Не авторизован
-                currentUser = null;
-                updateUIForLoggedOutUser();
-                throw new Error('Not authenticated');
-            }
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            return response.json();
-        }
-
-        // Auth functions
-        async function checkAuth() {
-            try {
-                const user = await apiRequest('/user');
-                currentUser = user;
-                updateUIForLoggedInUser();
-                return user;
-            } catch (error) {
-                currentUser = null;
-                updateUIForLoggedOutUser();
-                return null;
-            }
-        }
-
-        async function registerUser(username, email, password) {
-            try {
-                const user = await apiRequest('/register', {
-                    method: 'POST',
-                    body: { username, email, password }
-                });
-                currentUser = user;
-                updateUIForLoggedInUser();
-                return user;
-            } catch (error) {
-                throw new Error(error.message);
-            }
-        }
-
-        async function loginUser(email, password) {
-            try {
-                const user = await apiRequest('/login', {
-                    method: 'POST',
-                    body: { email, password }
-                });
-                currentUser = user;
-                updateUIForLoggedInUser();
-                return user;
-            } catch (error) {
-                throw new Error(error.message);
-            }
-        }
-
-        async function logoutUser() {
-            try {
-                await apiRequest('/logout', { method: 'POST' });
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                currentUser = null;
-                updateUIForLoggedOutUser();
-            }
-        }
-
-        // OAuth redirect functions
-        function oauthLogin(provider) {
-            window.location.href = OAUTH_URLS[provider];
-        }
-
-        // Products functions
-        async function loadProducts() {
-            try {
-                products = await apiRequest('/products');
-                displayProducts();
-            } catch (error) {
-                console.error('Error loading products:', error);
-            }
-        }
-
-        async function addProduct(productData) {
-            try {
-                const product = await apiRequest('/products', {
-                    method: 'POST',
-                    body: productData
-                });
-                products.unshift(product);
-                displayProducts();
-                return product;
-            } catch (error) {
-                throw new Error(error.message);
-            }
-        }
-
-        // Chat functions
-        async function loadChats() {
-            try {
-                chats = await apiRequest('/chats');
-                return chats;
-            } catch (error) {
-                console.error('Error loading chats:', error);
-                return [];
-            }
-        }
-
-        async function sendMessage(chatId, text) {
-            try {
-                const chat = await apiRequest(`/chats/${chatId}/messages`, {
-                    method: 'POST',
-                    body: { text }
-                });
-                return chat;
-            } catch (error) {
-                throw new Error(error.message);
-            }
-        }
-
-        // Avatar functions
-        function openAvatarModal() {
-            avatarModal.style.display = 'flex';
-        }
-
-        function closeAvatarModal() {
-            avatarModal.style.display = 'none';
-        }
-
-        async function updateAvatar(file) {
-            try {
-                const formData = new FormData();
-                formData.append('avatar', file);
-                
-                const response = await fetch(`${API_BASE}/user/avatar`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to update avatar');
-                }
-                
-                const user = await response.json();
-                currentUser = user;
-                updateUIForLoggedInUser();
-                return user;
-            } catch (error) {
-                throw new Error(error.message);
-            }
-        }
-
-        async function removeAvatar() {
-            try {
-                const user = await apiRequest('/user/avatar', {
-                    method: 'DELETE'
-                });
-                currentUser = user;
-                updateUIForLoggedInUser();
-                return user;
-            } catch (error) {
-                throw new Error(error.message);
-            }
+            console.log("Rocket Market initialized successfully!");
         }
 
         // Populate categories in sidebar
@@ -1748,7 +1640,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
+                        <img src="${game.icon}" alt="${game.name}" onerror="this.innerHTML='${fallbackIcons[game.name] || '🎮'}'">
                     </div>
                     <span>${game.name}</span>
                 `;
@@ -1762,7 +1654,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${game.icon}" alt="${game.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
+                        <img src="${game.icon}" alt="${game.name}" onerror="this.innerHTML='${fallbackIcons[game.name] || '📱'}'">
                     </div>
                     <span>${game.name}</span>
                 `;
@@ -1776,7 +1668,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${app.icon}" alt="${app.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
+                        <img src="${app.icon}" alt="${app.name}" onerror="this.innerHTML='${fallbackIcons[app.name] || '📱'}'">
                     </div>
                     <span>${app.name}</span>
                 `;
@@ -1796,7 +1688,7 @@
                 platformCard.className = 'platform-card';
                 platformCard.innerHTML = `
                     <div class="platform-icon">
-                        <img src="${platform.icon}" alt="${platform.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965358.png'">
+                        <img src="${platform.icon}" alt="${platform.name}" onerror="this.innerHTML='${fallbackIcons[platform.name] || '🎮'}'">
                     </div>
                     <div class="platform-name">${platform.name}</div>
                 `;
@@ -1864,33 +1756,26 @@
             }
         }
 
+        // Load demo products
+        function loadDemoProducts() {
+            products = demoProducts;
+            displayProducts();
+        }
+
         // Display products on the home page
         function displayProducts() {
             // Clear existing products
             productsGrid.innerHTML = '';
             
-            // Filter active products (not expired)
-            const activeProducts = products.filter(product => {
-                const createdDate = new Date(product.createdAt);
-                const expiryDate = new Date(createdDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
-                return expiryDate > new Date();
-            });
+            if (products.length === 0) {
+                productsGrid.innerHTML = '<p>Пока нет товаров. Будьте первым, кто добавит товар!</p>';
+                return;
+            }
             
-            // Sort by creation date (newest first)
-            activeProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            
-            // Display products (limit to 8)
-            const displayProducts = activeProducts.slice(0, 8);
-            
-            displayProducts.forEach(product => {
+            products.forEach(product => {
                 const productCard = createProductCard(product);
                 productsGrid.appendChild(productCard);
             });
-            
-            // If no products, show message
-            if (displayProducts.length === 0) {
-                productsGrid.innerHTML = '<p>Пока нет товаров. Будьте первым, кто добавит товар!</p>';
-            }
         }
 
         // Create product card element
@@ -1907,9 +1792,9 @@
                     <div class="product-price">${product.price} ₽</div>
                     <div class="product-seller">
                         <div class="seller-avatar">
-                            ${product.seller && product.seller.avatar ? `<img src="${product.seller.avatar}" alt="${product.seller.username}">` : '<i class="fas fa-user"></i>'}
+                            <i class="fas fa-user"></i>
                         </div>
-                        <span>${product.seller ? product.seller.username : 'Unknown'}</span>
+                        <span>${product.seller}</span>
                         <div class="seller-rating">
                             <i class="fas fa-star"></i>
                             <span>${product.rating || '5.0'}</span>
@@ -1917,7 +1802,7 @@
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-primary buy-btn">Купить</button>
-                        <button class="btn-message message-btn" data-seller="${product.seller ? product.seller._id : ''}">
+                        <button class="btn-message message-btn" data-seller="${product.sellerId}">
                             <i class="fas fa-comment"></i> Написать
                         </button>
                     </div>
@@ -1934,9 +1819,7 @@
             const messageBtn = productCard.querySelector('.message-btn');
             messageBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (product.seller) {
-                    openChatWithSeller(product.seller._id, product.seller.username);
-                }
+                openChatWithSeller(product.sellerId, product.seller);
             });
             
             productCard.addEventListener('click', () => {
@@ -1948,8 +1831,6 @@
 
         // Show product detail
         function showProductDetail(product) {
-            currentProduct = product;
-            
             productDetail.innerHTML = `
                 <div class="product-detail-header">
                     <div class="product-detail-image">
@@ -1960,9 +1841,9 @@
                         <div class="product-detail-price">${product.price} ₽</div>
                         <div class="product-detail-seller">
                             <div class="seller-avatar">
-                                ${product.seller && product.seller.avatar ? `<img src="${product.seller.avatar}" alt="${product.seller.username}">` : '<i class="fas fa-user"></i>'}
+                                <i class="fas fa-user"></i>
                             </div>
-                            <span>${product.seller ? product.seller.username : 'Unknown'}</span>
+                            <span>${product.seller}</span>
                             <div class="seller-rating">
                                 <i class="fas fa-star"></i>
                                 <span>${product.rating || '5.0'}</span>
@@ -1991,9 +1872,7 @@
             });
             
             document.getElementById('message-seller-btn').addEventListener('click', () => {
-                if (product.seller) {
-                    openChatWithSeller(product.seller._id, product.seller.username);
-                }
+                openChatWithSeller(product.sellerId, product.seller);
             });
             
             // Show product detail and hide other content
@@ -2013,19 +1892,21 @@
                 return;
             }
             
-            // Calculate commission and final price
             const commission = Math.round(product.price * 0.25);
             const finalPrice = product.price + commission;
             
             if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${finalPrice} ₽? (включая комиссию ${commission} ₽)`)) {
-                // In a real application, here would be payment processing
                 alert('Покупка успешно совершена! Свяжитесь с продавцом для получения товара.');
-                
-                // Remove product from listings
-                products = products.filter(p => p._id !== product._id);
-                
-                // Return to home page
                 showHomePage();
+            }
+        }
+
+        // Check authentication status
+        function checkAuthStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUIForLoggedInUser();
             }
         }
 
@@ -2053,14 +1934,218 @@
             }
         }
 
-        // Update UI for logged out user
-        function updateUIForLoggedOutUser() {
+        // User registration
+        function registerUser(username, email, password) {
+            // Check if user already exists
+            const existingUser = JSON.parse(localStorage.getItem('users')) || [];
+            const userExists = existingUser.find(user => user.email === email);
+            
+            if (userExists) {
+                alert('Пользователь с таким email уже существует');
+                return false;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                username,
+                email,
+                password, // In a real app, this should be hashed
+                role: 'user',
+                avatar: null,
+                createdAt: new Date().toISOString()
+            };
+            
+            existingUser.push(newUser);
+            localStorage.setItem('users', JSON.stringify(existingUser));
+            
+            // Log in the new user
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            updateUIForLoggedInUser();
+            return true;
+        }
+
+        // User login
+        function loginUser(email, password) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUIForLoggedInUser();
+                return true;
+            } else {
+                alert('Неверный email или пароль');
+                return false;
+            }
+        }
+
+        // User logout
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            
             loginBtn.style.display = 'block';
             registerBtn.style.display = 'block';
             logoutBtn.style.display = 'none';
             userProfile.style.display = 'none';
             navAddProduct.style.display = 'none';
             navAdmin.style.display = 'none';
+            
+            // Return to home page
+            showHomePage();
+        }
+
+        // Add new product
+        function addProduct(productData) {
+            const newProduct = {
+                id: Date.now(),
+                ...productData,
+                seller: currentUser.username,
+                sellerId: currentUser.id,
+                rating: '5.0',
+                createdAt: new Date().toISOString()
+            };
+            
+            products.unshift(newProduct);
+            
+            // Reset form
+            document.getElementById('product-form').reset();
+            imagePreview.style.display = 'none';
+            
+            // Show home page with new product
+            showHomePage();
+            displayProducts();
+            
+            alert('Товар успешно добавлен!');
+        }
+
+        // Filter products by category
+        function filterProductsByCategory(category) {
+            const filteredProducts = products.filter(product => product.category === category);
+            
+            productsGrid.innerHTML = '';
+            
+            if (filteredProducts.length === 0) {
+                productsGrid.innerHTML = `<p>В категории "${category}" пока нет товаров.</p>`;
+            } else {
+                filteredProducts.forEach(product => {
+                    const productCard = createProductCard(product);
+                    productsGrid.appendChild(productCard);
+                });
+            }
+            
+            // Update UI to show we're filtering
+            homeContent.style.display = 'block';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+            
+            document.querySelector('.section-title').textContent = `Товары в категории: ${category}`;
+        }
+
+        // Search products
+        function searchProducts(query) {
+            const filteredProducts = products.filter(product => 
+                product.title.toLowerCase().includes(query.toLowerCase()) ||
+                product.description.toLowerCase().includes(query.toLowerCase()) ||
+                product.category.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            productsGrid.innerHTML = '';
+            
+            if (filteredProducts.length === 0) {
+                productsGrid.innerHTML = `<p>По запросу "${query}" ничего не найдено.</p>`;
+            } else {
+                filteredProducts.forEach(product => {
+                    const productCard = createProductCard(product);
+                    productsGrid.appendChild(productCard);
+                });
+            }
+            
+            // Update UI to show we're searching
+            homeContent.style.display = 'block';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+            
+            document.querySelector('.section-title').textContent = `Результаты поиска: ${query}`;
+        }
+
+        // Chat functionality
+        function openChatWithSeller(sellerId, sellerName) {
+            if (!currentUser) {
+                alert('Для отправки сообщений необходимо войти в систему');
+                loginModal.style.display = 'flex';
+                return;
+            }
+            
+            currentChat = sellerId;
+            document.getElementById('chat-title').textContent = sellerName;
+            chatContainer.style.display = 'flex';
+            chatButton.style.display = 'none';
+        }
+
+        function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Display message
+            addMessageToChat(message, 'sent', new Date().toISOString(), currentUser.username);
+            
+            // Simulate response
+            setTimeout(() => {
+                addMessageToChat('Спасибо за ваше сообщение! Я свяжусь с вами в ближайшее время.', 'received', new Date().toISOString(), 'Продавец');
+            }, 1000);
+            
+            chatInput.value = '';
+        }
+
+        function addMessageToChat(text, type, timestamp, senderName) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <div class="message-info">${senderName} • ${new Date(timestamp).toLocaleTimeString()}</div>
+                <p>${text}</p>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Avatar functions
+        function openAvatarModal() {
+            avatarModal.style.display = 'flex';
+        }
+
+        function closeAvatarModal() {
+            avatarModal.style.display = 'none';
+        }
+
+        function updateAvatar(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentUser.avatar = e.target.result;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUIForLoggedInUser();
+                closeAvatarModal();
+                alert('Аватар успешно обновлен!');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeAvatar() {
+            currentUser.avatar = null;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateUIForLoggedInUser();
+            closeAvatarModal();
+            alert('Аватар успешно удален!');
         }
 
         // Page navigation
@@ -2139,100 +2224,6 @@
             productDetail.style.display = 'none';
         }
 
-        // Filter products by category
-        function filterProductsByCategory(category) {
-            const filteredProducts = products.filter(product => 
-                product.category === category
-            );
-            
-            productsGrid.innerHTML = '';
-            
-            filteredProducts.forEach(product => {
-                const productCard = createProductCard(product);
-                productsGrid.appendChild(productCard);
-            });
-            
-            // Update UI to show we're filtering
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            document.querySelector('.section-title').textContent = `Товары в категории: ${category}`;
-        }
-
-        // Search products
-        function searchProducts(query) {
-            const filteredProducts = products.filter(product => 
-                product.title.toLowerCase().includes(query.toLowerCase()) ||
-                product.description.toLowerCase().includes(query.toLowerCase()) ||
-                product.category.toLowerCase().includes(query.toLowerCase())
-            );
-            
-            productsGrid.innerHTML = '';
-            
-            filteredProducts.forEach(product => {
-                const productCard = createProductCard(product);
-                productsGrid.appendChild(productCard);
-            });
-            
-            // Update UI to show we're searching
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            document.querySelector('.section-title').textContent = `Результаты поиска: ${query}`;
-        }
-
-        // Chat functionality
-        function openChatWithSeller(sellerId, sellerName) {
-            if (!currentUser) {
-                alert('Для отправки сообщений необходимо войти в систему');
-                loginModal.style.display = 'flex';
-                return;
-            }
-            
-            currentChat = sellerId;
-            document.getElementById('chat-title').textContent = sellerName;
-            chatContainer.style.display = 'flex';
-            chatButton.style.display = 'none';
-        }
-
-        function sendChatMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-            
-            // Create message object
-            const messageObj = {
-                id: Date.now().toString(),
-                text: message,
-                sender: currentUser.id,
-                senderName: currentUser.username,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Display message
-            addMessageToChat(message, 'sent', messageObj.timestamp, currentUser.username);
-            
-            chatInput.value = '';
-        }
-
-        function addMessageToChat(text, type, timestamp, senderName) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `
-                <div class="message-info">${senderName} • ${new Date(timestamp).toLocaleString()}</div>
-                <p>${text}</p>
-            `;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
         // Setup event listeners
         function setupEventListeners() {
             // Theme toggle
@@ -2302,14 +2293,8 @@
                 avatarUploadInput.click();
             });
 
-            removeAvatarBtn.addEventListener('click', async function() {
-                try {
-                    await removeAvatar();
-                    closeAvatarModal();
-                    alert('Аватар успешно удален!');
-                } catch (error) {
-                    alert('Ошибка при удалении аватара: ' + error.message);
-                }
+            removeAvatarBtn.addEventListener('click', function() {
+                removeAvatar();
             });
 
             cancelAvatarBtn.addEventListener('click', function() {
@@ -2342,21 +2327,18 @@
             });
 
             // Form submissions
-            document.getElementById('login-form').addEventListener('submit', async function(e) {
+            document.getElementById('login-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 
-                try {
-                    await loginUser(email, password);
+                if (loginUser(email, password)) {
                     loginModal.style.display = 'none';
                     showHomePage();
-                } catch (error) {
-                    alert(error.message);
                 }
             });
 
-            document.getElementById('register-form').addEventListener('submit', async function(e) {
+            document.getElementById('register-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const username = document.getElementById('register-username').value;
                 const email = document.getElementById('register-email').value;
@@ -2368,49 +2350,36 @@
                     return;
                 }
                 
-                try {
-                    await registerUser(username, email, password);
+                if (registerUser(username, email, password)) {
                     registerModal.style.display = 'none';
                     showHomePage();
-                } catch (error) {
-                    alert(error.message);
                 }
             });
 
             // Profile form
-            document.getElementById('profile-form').addEventListener('submit', async function(e) {
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const username = document.getElementById('profile-username-input').value;
                 const email = document.getElementById('profile-email-input').value;
                 
-                try {
-                    const user = await apiRequest('/user', {
-                        method: 'PUT',
-                        body: { username, email }
-                    });
-                    currentUser = user;
-                    updateUIForLoggedInUser();
-                    alert('Профиль успешно обновлен!');
-                } catch (error) {
-                    alert('Ошибка при обновлении профиля: ' + error.message);
-                }
+                currentUser.username = username;
+                currentUser.email = email;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUIForLoggedInUser();
+                
+                alert('Профиль успешно обновлен!');
             });
 
             // Avatar upload
-            avatarUploadInput.addEventListener('change', async function(e) {
+            avatarUploadInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    try {
-                        await updateAvatar(file);
-                        alert('Аватар успешно обновлен!');
-                    } catch (error) {
-                        alert('Ошибка при обновлении аватара: ' + error.message);
-                    }
+                    updateAvatar(file);
                 }
             });
 
             // Product form
-            document.getElementById('product-form').addEventListener('submit', async function(e) {
+            document.getElementById('product-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 const title = document.getElementById('product-title').value;
@@ -2420,23 +2389,14 @@
                 const description = document.getElementById('product-description').value;
                 const fullDescription = document.getElementById('product-full-description').value;
                 
-                try {
-                    await addProduct({
-                        title,
-                        category,
-                        subcategory,
-                        price,
-                        description,
-                        fullDescription
-                    });
-                    
-                    document.getElementById('product-form').reset();
-                    imagePreview.style.display = 'none';
-                    showHomePage();
-                    alert('Товар успешно добавлен!');
-                } catch (error) {
-                    alert('Ошибка при добавлении товара: ' + error.message);
-                }
+                addProduct({
+                    title,
+                    category,
+                    subcategory,
+                    price,
+                    description,
+                    fullDescription
+                });
             });
 
             // Category change
@@ -2545,29 +2505,29 @@
                 });
             });
 
-            // OAuth buttons
+            // OAuth buttons - демо версия
             document.getElementById('google-login').addEventListener('click', function() {
-                oauthLogin('google');
+                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
             });
 
             document.getElementById('vk-login').addEventListener('click', function() {
-                oauthLogin('vk');
+                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
             });
 
             document.getElementById('telegram-login').addEventListener('click', function() {
-                oauthLogin('telegram');
+                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
             });
 
             document.getElementById('google-register').addEventListener('click', function() {
-                oauthLogin('google');
+                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
             });
 
             document.getElementById('vk-register').addEventListener('click', function() {
-                oauthLogin('vk');
+                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
             });
 
             document.getElementById('telegram-register').addEventListener('click', function() {
-                oauthLogin('telegram');
+                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
             });
         }
 
@@ -2575,7 +2535,7 @@
         function showMyProducts() {
             if (!currentUser) return;
             
-            const myProducts = products.filter(p => p.seller && p.seller._id === currentUser._id);
+            const myProducts = products.filter(p => p.sellerId === currentUser.id);
             
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
@@ -2606,9 +2566,6 @@
         function showMyPurchases() {
             if (!currentUser) return;
             
-            // In a real app, this would come from the API
-            const myPurchases = [];
-            
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
             profileSettings.style.display = 'none';
@@ -2616,55 +2573,12 @@
             adminPanel.style.display = 'none';
             productDetail.style.display = 'none';
             
-            productsGrid.innerHTML = '';
-            
-            if (myPurchases.length === 0) {
-                productsGrid.innerHTML = '<p>У вас пока нет покупок.</p>';
-            } else {
-                myPurchases.forEach(purchase => {
-                    const purchaseCard = document.createElement('div');
-                    purchaseCard.className = 'product-card';
-                    purchaseCard.innerHTML = `
-                        <div class="product-info">
-                            <h3 class="product-title">${purchase.productTitle}</h3>
-                            <div class="product-price">${purchase.finalPrice} ₽</div>
-                            <div class="product-seller">
-                                <div class="seller-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span>Продавец: ${purchase.sellerName}</span>
-                            </div>
-                            <div class="product-actions">
-                                <button class="btn btn-primary contact-seller-btn" data-seller="${purchase.sellerId}">
-                                    Связаться с продавцом
-                                </button>
-                            </div>
-                            <p>Дата покупки: ${new Date(purchase.date).toLocaleDateString()}</p>
-                        </div>
-                    `;
-                    
-                    const contactBtn = purchaseCard.querySelector('.contact-seller-btn');
-                    contactBtn.addEventListener('click', function() {
-                        openChatWithSeller(purchase.sellerId, purchase.sellerName);
-                    });
-                    
-                    productsGrid.appendChild(purchaseCard);
-                });
-            }
+            productsGrid.innerHTML = '<p>У вас пока нет покупок.</p>';
             
             document.querySelector('.section-title').textContent = 'Мои покупки';
         }
 
-        // Инициализация при загрузке
-        async function init() {
-            await checkAuth();
-            populateCategories();
-            populatePlatforms();
-            populateProductCategories();
-            await loadProducts();
-            setupEventListeners();
-        }
-
+        // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
