@@ -199,12 +199,29 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
         }
 
         .user-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .avatar-actions {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background-color: var(--accent-color);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .user-dropdown {
@@ -1068,6 +1085,9 @@
                         <div class="user-profile" id="user-profile" style="display: none;">
                             <div class="user-avatar" id="user-avatar">
                                 <i class="fas fa-user"></i>
+                                <div class="avatar-actions">
+                                    <i class="fas fa-pen"></i>
+                                </div>
                             </div>
                             <span id="username-display"></span>
                             <div class="user-dropdown" id="user-dropdown">
@@ -1380,47 +1400,35 @@
     <script>
         // Game and app data with real logos
         const games = [
-            { name: "GTA 5 Online", icon: "https://cdn-icons-png.flaticon.com/512/731/731962.png" },
-            { name: "Roblox", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968520.png" },
-            { name: "Fortnite", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968522.png" },
-            { name: "Genshin Impact", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859165.png" },
-            { name: "Minecraft", icon: "https://cdn-icons-png.flaticon.com/512/732/732244.png" },
-            { name: "Valorant", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859194.png" },
-            { name: "Counter-Strike 2", icon: "https://cdn-icons-png.flaticon.com/512/731/731964.png" },
-            { name: "SCraft", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859185.png" },
-            { name: "Arena Breakout", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859175.png" },
-            { name: "ARC Raiders", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859170.png" },
-            { name: "EA SPORTS FC 26", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859180.png" },
-            { name: "Dota 2", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859178.png" },
-            { name: "Танки ПК", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859190.png" },
-            { name: "Battlefield 6", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859172.png" },
-            { name: "eFootball", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859179.png" },
-            { name: "Rust", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859187.png" },
-            { name: "Dead by Daylight", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859177.png" },
-            { name: "Hearthstone", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859182.png" },
-            { name: "Warface", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859193.png" },
-            { name: "World of Warcraft", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859195.png" }
+            { name: "GTA 5 Online", icon: "https://upload.wikimedia.org/wikipedia/ru/a/a5/Grand_Theft_Auto_V_cover.png" },
+            { name: "Roblox", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Roblox_player_icon_black.svg/1200px-Roblox_player_icon_black.svg.png" },
+            { name: "Fortnite", icon: "https://upload.wikimedia.org/wikipedia/ru/7/78/Fortnite_Battle_Royale.png" },
+            { name: "Genshin Impact", icon: "https://upload.wikimedia.org/wikipedia/ru/7/7e/Genshin_Impact.jpg" },
+            { name: "Minecraft", icon: "https://upload.wikimedia.org/wikipedia/ru/5/51/Minecraft_cover.png" },
+            { name: "Valorant", icon: "https://upload.wikimedia.org/wikipedia/ru/f/fc/Valorant_cover.png" },
+            { name: "Counter-Strike 2", icon: "https://upload.wikimedia.org/wikipedia/ru/6/6a/Counter-Strike_2_Logo.png" },
+            { name: "Dota 2", icon: "https://upload.wikimedia.org/wikipedia/ru/0/07/Dota_2_Logo.png" },
+            { name: "Rust", icon: "https://upload.wikimedia.org/wikipedia/ru/6/6a/Rust_cover.png" },
+            { name: "World of Warcraft", icon: "https://upload.wikimedia.org/wikipedia/ru/6/65/World_of_Warcraft_Box_Art.jpg" }
         ];
 
         const mobileGames = [
-            { name: "PUBG Mobile", icon: "https://cdn-icons-png.flaticon.com/512/731/731963.png" },
-            { name: "Brawl Stars", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859173.png" },
-            { name: "Standoff 2", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859188.png" },
-            { name: "Clash Royale", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859174.png" },
-            { name: "Clash of Clan", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859176.png" }
+            { name: "PUBG Mobile", icon: "https://upload.wikimedia.org/wikipedia/ru/7/7e/PUBG_Mobile_Logo.png" },
+            { name: "Brawl Stars", icon: "https://upload.wikimedia.org/wikipedia/ru/9/9a/Brawl_Stars_Logo.png" },
+            { name: "Clash Royale", icon: "https://upload.wikimedia.org/wikipedia/ru/8/8a/Clash_Royale_Logo.png" },
+            { name: "Clash of Clans", icon: "https://upload.wikimedia.org/wikipedia/ru/8/8a/Clash_of_Clans_Logo.png" },
+            { name: "Mobile Legends", icon: "https://upload.wikimedia.org/wikipedia/ru/7/7e/Mobile_Legends_Logo.png" }
         ];
 
         const apps = [
-            { name: "Telegram", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png" },
-            { name: "Steam", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968521.png" },
-            { name: "PlayStation", icon: "https://cdn-icons-png.flaticon.com/512/731/731975.png" },
-            { name: "TikTok", icon: "https://cdn-icons-png.flaticon.com/512/3046/3046126.png" },
-            { name: "App Store", icon: "https://cdn-icons-png.flaticon.com/512/179/179309.png" },
-            { name: "ChatGPT", icon: "https://cdn-icons-png.flaticon.com/512/6134/6134346.png" },
-            { name: "Discord", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968756.png" },
-            { name: "Xbox", icon: "https://cdn-icons-png.flaticon.com/512/732/732221.png" },
-            { name: "Spotify", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111624.png" },
-            { name: "Windows", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968856.png" }
+            { name: "Telegram", icon: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
+            { name: "Steam", icon: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" },
+            { name: "PlayStation", icon: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Playstation_logo_colour.svg" },
+            { name: "TikTok", icon: "https://upload.wikimedia.org/wikipedia/ru/a/a9/TikTok_logo.svg" },
+            { name: "Discord", icon: "https://upload.wikimedia.org/wikipedia/ru/4/4f/Discord_logo.svg" },
+            { name: "Xbox", icon: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg" },
+            { name: "Spotify", icon: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" },
+            { name: "Windows", icon: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" }
         ];
 
         // Subcategories for products
@@ -1492,6 +1500,8 @@
         const profileEmail = document.getElementById('profile-email');
         const profileUsernameInput = document.getElementById('profile-username-input');
         const profileEmailInput = document.getElementById('profile-email-input');
+        const myProductsLink = document.getElementById('my-products-link');
+        const myPurchasesLink = document.getElementById('my-purchases-link');
 
         // Initialize the application
         function init() {
@@ -1920,9 +1930,9 @@
             
             // Update user avatar
             if (currentUser.avatar) {
-                userAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="${currentUser.username}">`;
+                userAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="${currentUser.username}"><div class="avatar-actions"><i class="fas fa-pen"></i></div>`;
             } else {
-                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                userAvatar.innerHTML = '<i class="fas fa-user"></i><div class="avatar-actions"><i class="fas fa-pen"></i></div>';
             }
             
             // Show add product button for all users
@@ -2395,6 +2405,12 @@
                 showProfileSettings();
             });
 
+            // Avatar actions
+            userAvatar.addEventListener('click', function(e) {
+                e.stopPropagation();
+                avatarUploadInput.click();
+            });
+
             // Close modals when clicking outside
             window.addEventListener('click', function(e) {
                 if (e.target === loginModal) {
@@ -2557,6 +2573,19 @@
                 showAdminPanel();
             });
 
+            // My products and purchases
+            myProductsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                userDropdown.classList.remove('show');
+                showMyProducts();
+            });
+
+            myPurchasesLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                userDropdown.classList.remove('show');
+                showMyPurchases();
+            });
+
             // Admin tabs
             adminTabs.forEach(tab => {
                 tab.addEventListener('click', function() {
@@ -2598,6 +2627,90 @@
             document.getElementById('telegram-register').addEventListener('click', function() {
                 oauthLogin('telegram');
             });
+        }
+
+        // Show my products
+        function showMyProducts() {
+            if (!currentUser) return;
+            
+            const myProducts = products.filter(p => p.sellerId === currentUser.id);
+            
+            homeContent.style.display = 'block';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+            
+            productsGrid.innerHTML = '';
+            
+            if (myProducts.length === 0) {
+                productsGrid.innerHTML = '<p>У вас пока нет товаров. <a href="#" id="add-first-product">Добавить первый товар</a></p>';
+                document.getElementById('add-first-product').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showAddProductPage();
+                });
+            } else {
+                myProducts.forEach(product => {
+                    const productCard = createProductCard(product);
+                    productsGrid.appendChild(productCard);
+                });
+            }
+            
+            document.querySelector('.section-title').textContent = 'Мои товары';
+        }
+
+        // Show my purchases
+        function showMyPurchases() {
+            if (!currentUser) return;
+            
+            const purchases = JSON.parse(localStorage.getItem('purchases')) || [];
+            const myPurchases = purchases.filter(p => p.buyerId === currentUser.id);
+            
+            homeContent.style.display = 'block';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+            
+            productsGrid.innerHTML = '';
+            
+            if (myPurchases.length === 0) {
+                productsGrid.innerHTML = '<p>У вас пока нет покупок.</p>';
+            } else {
+                myPurchases.forEach(purchase => {
+                    const purchaseCard = document.createElement('div');
+                    purchaseCard.className = 'product-card';
+                    purchaseCard.innerHTML = `
+                        <div class="product-info">
+                            <h3 class="product-title">${purchase.productTitle}</h3>
+                            <div class="product-price">${purchase.finalPrice} ₽</div>
+                            <div class="product-seller">
+                                <div class="seller-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span>Продавец: ${purchase.sellerName}</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn btn-primary contact-seller-btn" data-seller="${purchase.sellerId}">
+                                    Связаться с продавцом
+                                </button>
+                            </div>
+                            <p>Дата покупки: ${new Date(purchase.date).toLocaleDateString()}</p>
+                        </div>
+                    `;
+                    
+                    const contactBtn = purchaseCard.querySelector('.contact-seller-btn');
+                    contactBtn.addEventListener('click', function() {
+                        openChatWithSeller(purchase.sellerId, purchase.sellerName);
+                    });
+                    
+                    productsGrid.appendChild(purchaseCard);
+                });
+            }
+            
+            document.querySelector('.section-title').textContent = 'Мои покупки';
         }
 
         // Initialize the application when DOM is loaded
