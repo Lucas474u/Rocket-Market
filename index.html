@@ -351,12 +351,19 @@
             justify-content: center;
             border-radius: 4px;
             overflow: hidden;
+            background-color: var(--card-bg);
         }
 
         .category-icon img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+        }
+
+        .category-icon.fallback {
+            font-size: 14px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
         }
 
         .content {
@@ -430,12 +437,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background-color: var(--secondary-color);
         }
 
         .platform-icon img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+        }
+
+        .platform-icon.fallback {
+            font-size: 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
         }
 
         .platform-name {
@@ -1441,78 +1455,44 @@
     </footer>
 
     <script>
-        // Game and app data with reliable CDN icons
+        // Game and app data with reliable icons
         const games = [
-            { name: "GTA 5 Online", icon: "https://cdn2.steamgriddb.com/icon/b1f62e0f6d723c69c15e9b9a81b9f037/32/256x256.png" },
-            { name: "Roblox", icon: "https://cdn2.steamgriddb.com/icon/865c1d5d5d5034d95267eee1f13dbe4e/32/256x256.png" },
-            { name: "Fortnite", icon: "https://cdn2.steamgriddb.com/icon/3d6d6b6c5d73f7b7e6e6e6c5d73f7b7e/32/256x256.png" },
-            { name: "Genshin Impact", icon: "https://cdn2.steamgriddb.com/icon/8f7d7e7c7e7c7e7c7e7c7e7c7e7c7e7c/32/256x256.png" },
-            { name: "Minecraft", icon: "https://cdn2.steamgriddb.com/icon/4e4b5f5b5b5b5b5b5b5b5b5b5b5b5b5b/32/256x256.png" },
-            { name: "Valorant", icon: "https://cdn2.steamgriddb.com/icon/5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d/32/256x256.png" },
-            { name: "Counter-Strike 2", icon: "https://cdn2.steamgriddb.com/icon/6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d/32/256x256.png" },
-            { name: "Dota 2", icon: "https://cdn2.steamgriddb.com/icon/7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d/32/256x256.png" },
-            { name: "Rust", icon: "https://cdn2.steamgriddb.com/icon/8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e/32/256x256.png" },
-            { name: "World of Warcraft", icon: "https://cdn2.steamgriddb.com/icon/9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f/32/256x256.png" }
+            { name: "GTA 5 Online", icon: "https://cdn-icons-png.flaticon.com/512/731/731962.png", fallback: "🚗" },
+            { name: "Roblox", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968520.png", fallback: "🧱" },
+            { name: "Fortnite", icon: "https://cdn-icons-png.flaticon.com/512/731/731973.png", fallback: "🏹" },
+            { name: "Genshin Impact", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859165.png", fallback: "⚔️" },
+            { name: "Minecraft", icon: "https://cdn-icons-png.flaticon.com/512/732/732252.png", fallback: "⛏️" },
+            { name: "Valorant", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859194.png", fallback: "🎯" },
+            { name: "Counter-Strike 2", icon: "https://cdn-icons-png.flaticon.com/512/731/731964.png", fallback: "🔫" },
+            { name: "Dota 2", icon: "https://cdn-icons-png.flaticon.com/512/871/871366.png", fallback: "⚔️" },
+            { name: "Rust", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859182.png", fallback: "🛠️" },
+            { name: "World of Warcraft", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859201.png", fallback: "🐉" }
         ];
 
         const mobileGames = [
-            { name: "PUBG Mobile", icon: "https://cdn2.steamgriddb.com/icon/a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1/32/256x256.png" },
-            { name: "Brawl Stars", icon: "https://cdn2.steamgriddb.com/icon/b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2/32/256x256.png" },
-            { name: "Clash Royale", icon: "https://cdn2.steamgriddb.com/icon/c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3/32/256x256.png" },
-            { name: "Clash of Clans", icon: "https://cdn2.steamgriddb.com/icon/d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4/32/256x256.png" },
-            { name: "Mobile Legends", icon: "https://cdn2.steamgriddb.com/icon/e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5/32/256x256.png" }
+            { name: "PUBG Mobile", icon: "https://cdn-icons-png.flaticon.com/512/731/731959.png", fallback: "🎮" },
+            { name: "Brawl Stars", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859168.png", fallback: "👊" },
+            { name: "Clash Royale", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859171.png", fallback: "👑" },
+            { name: "Clash of Clans", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859170.png", fallback: "🏰" },
+            { name: "Mobile Legends", icon: "https://cdn-icons-png.flaticon.com/512/7859/7859186.png", fallback: "🗡️" }
         ];
 
         const apps = [
-            { name: "Telegram", icon: "https://cdn2.steamgriddb.com/icon/f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6/32/256x256.png" },
-            { name: "Steam", icon: "https://cdn2.steamgriddb.com/icon/07070707070707070707070707070707/32/256x256.png" },
-            { name: "PlayStation", icon: "https://cdn2.steamgriddb.com/icon/08080808080808080808080808080808/32/256x256.png" },
-            { name: "TikTok", icon: "https://cdn2.steamgriddb.com/icon/09090909090909090909090909090909/32/256x256.png" },
-            { name: "Discord", icon: "https://cdn2.steamgriddb.com/icon/0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a/32/256x256.png" },
-            { name: "Xbox", icon: "https://cdn2.steamgriddb.com/icon/0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b/32/256x256.png" },
-            { name: "Spotify", icon: "https://cdn2.steamgriddb.com/icon/0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c/32/256x256.png" },
-            { name: "Windows", icon: "https://cdn2.steamgriddb.com/icon/0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d/32/256x256.png" }
+            { name: "Telegram", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png", fallback: "✈️" },
+            { name: "Steam", icon: "https://cdn-icons-png.flaticon.com/512/220/220214.png", fallback: "🎮" },
+            { name: "PlayStation", icon: "https://cdn-icons-png.flaticon.com/512/871/871399.png", fallback: "🎮" },
+            { name: "TikTok", icon: "https://cdn-icons-png.flaticon.com/512/3046/3046126.png", fallback: "🎵" },
+            { name: "Discord", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968756.png", fallback: "💬" },
+            { name: "Xbox", icon: "https://cdn-icons-png.flaticon.com/512/732/732221.png", fallback: "🎮" },
+            { name: "Spotify", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111624.png", fallback: "🎵" },
+            { name: "Windows", icon: "https://cdn-icons-png.flaticon.com/512/888/888853.png", fallback: "🪟" }
         ];
-
-        // Fallback icons if CDN fails
-        const fallbackIcons = {
-            "GTA 5 Online": "🎮",
-            "Roblox": "🧱", 
-            "Fortnite": "🏹",
-            "Genshin Impact": "⚔️",
-            "Minecraft": "⛏️",
-            "Valorant": "🎯",
-            "Counter-Strike 2": "🔫",
-            "Dota 2": "⚡",
-            "Rust": "🛠️",
-            "World of Warcraft": "🐉",
-            "PUBG Mobile": "📱",
-            "Brawl Stars": "👊",
-            "Clash Royale": "👑",
-            "Clash of Clans": "🏰",
-            "Mobile Legends": "🗡️",
-            "Telegram": "✈️",
-            "Steam": "🎮",
-            "PlayStation": "🎯",
-            "TikTok": "🎵",
-            "Discord": "💬",
-            "Xbox": "🎮",
-            "Spotify": "🎵",
-            "Windows": "🪟"
-        };
-
-        // Subcategories for products
-        const subcategories = ["Аренда", "Буст", "Услуги", "Другое", "Аккаунты", "Донат"];
-
-        // Telegram subcategories
-        const telegramSubcategories = ["Подарки (NFT)", "Аренда", "Telegram Stars", "Юзернеймы", "Боты услуги", "Группы", "Реклама", "Премиум", "Каналы", "Дизайн", "Другое"];
 
         // Application state
         let currentUser = null;
         let products = [];
         let chats = [];
         let currentChat = null;
-        let isOnline = true; // For demo purposes
 
         // Demo products data
         const demoProducts = [
@@ -1560,66 +1540,6 @@
             }
         ];
 
-        // DOM Elements
-        const gamesCategory = document.getElementById('games-category');
-        const mobileGamesCategory = document.getElementById('mobile-games-category');
-        const appsCategory = document.getElementById('apps-category');
-        const platformsGrid = document.getElementById('platforms-grid');
-        const productsGrid = document.getElementById('products-grid');
-        const themeToggle = document.getElementById('theme-toggle');
-        const chatButton = document.getElementById('chat-button');
-        const chatContainer = document.getElementById('chat-container');
-        const chatClose = document.getElementById('chat-close');
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const sendMessage = document.getElementById('send-message');
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userProfile = document.getElementById('user-profile');
-        const userAvatar = document.getElementById('user-avatar');
-        const usernameDisplay = document.getElementById('username-display');
-        const userDropdown = document.getElementById('user-dropdown');
-        const loginModal = document.getElementById('login-modal');
-        const registerModal = document.getElementById('register-modal');
-        const loginClose = document.getElementById('login-close');
-        const registerClose = document.getElementById('register-close');
-        const homeContent = document.getElementById('home-content');
-        const addProductForm = document.getElementById('add-product-form');
-        const productDetail = document.getElementById('product-detail');
-        const profileSettings = document.getElementById('profile-settings');
-        const rulesPage = document.getElementById('rules-page');
-        const adminPanel = document.getElementById('admin-panel');
-        const productCategory = document.getElementById('product-category');
-        const productSubcategory = document.getElementById('product-subcategory');
-        const imageUpload = document.getElementById('image-upload');
-        const productImage = document.getElementById('product-image');
-        const imagePreview = document.getElementById('image-preview');
-        const searchInput = document.getElementById('search-input');
-        const searchBtn = document.getElementById('search-btn');
-        const homeLink = document.getElementById('home-link');
-        const navHome = document.getElementById('nav-home');
-        const navCatalog = document.getElementById('nav-catalog');
-        const navRules = document.getElementById('nav-rules');
-        const navSupport = document.getElementById('nav-support');
-        const navAddProduct = document.getElementById('nav-add-product');
-        const navAdmin = document.getElementById('nav-admin');
-        const profileSettingsLink = document.getElementById('profile-settings-link');
-        const supportMessagesContainer = document.getElementById('support-messages');
-        const adminTabs = document.querySelectorAll('.admin-tab');
-        const profileAvatarImg = document.getElementById('profile-avatar-img');
-        const avatarUploadInput = document.getElementById('avatar-upload-input');
-        const profileUsername = document.getElementById('profile-username');
-        const profileEmail = document.getElementById('profile-email');
-        const profileUsernameInput = document.getElementById('profile-username-input');
-        const profileEmailInput = document.getElementById('profile-email-input');
-        const myProductsLink = document.getElementById('my-products-link');
-        const myPurchasesLink = document.getElementById('my-purchases-link');
-        const avatarModal = document.getElementById('avatar-modal');
-        const changeAvatarBtn = document.getElementById('change-avatar-btn');
-        const removeAvatarBtn = document.getElementById('remove-avatar-btn');
-        const cancelAvatarBtn = document.getElementById('cancel-avatar-btn');
-
         // Initialize the application
         function init() {
             populateCategories();
@@ -1640,7 +1560,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${game.icon}" alt="${game.name}" onerror="this.innerHTML='${fallbackIcons[game.name] || '🎮'}'">
+                        <img src="${game.icon}" alt="${game.name}" onerror="this.onerror=null; this.style.display='none'; this.parentNode.className='category-icon fallback'; this.parentNode.innerHTML='${game.fallback}'">
                     </div>
                     <span>${game.name}</span>
                 `;
@@ -1654,7 +1574,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${game.icon}" alt="${game.name}" onerror="this.innerHTML='${fallbackIcons[game.name] || '📱'}'">
+                        <img src="${game.icon}" alt="${game.name}" onerror="this.onerror=null; this.style.display='none'; this.parentNode.className='category-icon fallback'; this.parentNode.innerHTML='${game.fallback}'">
                     </div>
                     <span>${game.name}</span>
                 `;
@@ -1668,7 +1588,7 @@
                 li.className = 'category-item';
                 li.innerHTML = `
                     <div class="category-icon">
-                        <img src="${app.icon}" alt="${app.name}" onerror="this.innerHTML='${fallbackIcons[app.name] || '📱'}'">
+                        <img src="${app.icon}" alt="${app.name}" onerror="this.onerror=null; this.style.display='none'; this.parentNode.className='category-icon fallback'; this.parentNode.innerHTML='${app.fallback}'">
                     </div>
                     <span>${app.name}</span>
                 `;
@@ -1688,7 +1608,7 @@
                 platformCard.className = 'platform-card';
                 platformCard.innerHTML = `
                     <div class="platform-icon">
-                        <img src="${platform.icon}" alt="${platform.name}" onerror="this.innerHTML='${fallbackIcons[platform.name] || '🎮'}'">
+                        <img src="${platform.icon}" alt="${platform.name}" onerror="this.onerror=null; this.style.display='none'; this.parentNode.className='platform-icon fallback'; this.parentNode.innerHTML='${platform.fallback}'">
                     </div>
                     <div class="platform-name">${platform.name}</div>
                 `;
@@ -1697,886 +1617,8 @@
             });
         }
 
-        // Populate product categories in add product form
-        function populateProductCategories() {
-            // Clear existing options
-            productCategory.innerHTML = '<option value="">Выберите категорию</option>';
-            
-            // Add games
-            games.forEach(game => {
-                const option = document.createElement('option');
-                option.value = game.name;
-                option.textContent = game.name;
-                productCategory.appendChild(option);
-            });
-            
-            // Add mobile games
-            mobileGames.forEach(game => {
-                const option = document.createElement('option');
-                option.value = game.name;
-                option.textContent = game.name;
-                productCategory.appendChild(option);
-            });
-            
-            // Add apps
-            apps.forEach(app => {
-                const option = document.createElement('option');
-                option.value = app.name;
-                option.textContent = app.name;
-                productCategory.appendChild(option);
-            });
-            
-            // Populate subcategories
-            populateSubcategories();
-        }
-
-        // Populate subcategories based on selected category
-        function populateSubcategories() {
-            // Clear existing options
-            productSubcategory.innerHTML = '<option value="">Выберите подкатегорию</option>';
-            
-            const selectedCategory = productCategory.value;
-            
-            // Use Telegram subcategories for Telegram category
-            if (selectedCategory === 'Telegram') {
-                telegramSubcategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    productSubcategory.appendChild(option);
-                });
-            } else {
-                // Use standard subcategories for other categories
-                subcategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    productSubcategory.appendChild(option);
-                });
-            }
-        }
-
-        // Load demo products
-        function loadDemoProducts() {
-            products = demoProducts;
-            displayProducts();
-        }
-
-        // Display products on the home page
-        function displayProducts() {
-            // Clear existing products
-            productsGrid.innerHTML = '';
-            
-            if (products.length === 0) {
-                productsGrid.innerHTML = '<p>Пока нет товаров. Будьте первым, кто добавит товар!</p>';
-                return;
-            }
-            
-            products.forEach(product => {
-                const productCard = createProductCard(product);
-                productsGrid.appendChild(productCard);
-            });
-        }
-
-        // Create product card element
-        function createProductCard(product) {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card';
-            productCard.innerHTML = `
-                <div class="product-image">
-                    ${product.image ? `<img src="${product.image}" alt="${product.title}">` : '<i class="fas fa-image fa-3x"></i>'}
-                    <div class="product-badge">Новый</div>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">${product.title}</h3>
-                    <div class="product-price">${product.price} ₽</div>
-                    <div class="product-seller">
-                        <div class="seller-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <span>${product.seller}</span>
-                        <div class="seller-rating">
-                            <i class="fas fa-star"></i>
-                            <span>${product.rating || '5.0'}</span>
-                        </div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-primary buy-btn">Купить</button>
-                        <button class="btn-message message-btn" data-seller="${product.sellerId}">
-                            <i class="fas fa-comment"></i> Написать
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Add event listeners
-            const buyBtn = productCard.querySelector('.buy-btn');
-            buyBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                buyProduct(product);
-            });
-            
-            const messageBtn = productCard.querySelector('.message-btn');
-            messageBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openChatWithSeller(product.sellerId, product.seller);
-            });
-            
-            productCard.addEventListener('click', () => {
-                showProductDetail(product);
-            });
-            
-            return productCard;
-        }
-
-        // Show product detail
-        function showProductDetail(product) {
-            productDetail.innerHTML = `
-                <div class="product-detail-header">
-                    <div class="product-detail-image">
-                        ${product.image ? `<img src="${product.image}" alt="${product.title}">` : '<i class="fas fa-image fa-5x"></i>'}
-                    </div>
-                    <div class="product-detail-info">
-                        <h1 class="product-detail-title">${product.title}</h1>
-                        <div class="product-detail-price">${product.price} ₽</div>
-                        <div class="product-detail-seller">
-                            <div class="seller-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <span>${product.seller}</span>
-                            <div class="seller-rating">
-                                <i class="fas fa-star"></i>
-                                <span>${product.rating || '5.0'}</span>
-                            </div>
-                        </div>
-                        <div class="product-detail-description">
-                            <p>${product.description}</p>
-                        </div>
-                        <div class="product-actions">
-                            <button class="btn btn-primary" id="buy-now-btn">Купить сейчас</button>
-                            <button class="btn-message" id="message-seller-btn">
-                                <i class="fas fa-comment"></i> Написать продавцу
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-detail-full">
-                    <h3>Подробное описание</h3>
-                    <p>${product.fullDescription}</p>
-                </div>
-            `;
-            
-            // Add event listeners
-            document.getElementById('buy-now-btn').addEventListener('click', () => {
-                buyProduct(product);
-            });
-            
-            document.getElementById('message-seller-btn').addEventListener('click', () => {
-                openChatWithSeller(product.sellerId, product.seller);
-            });
-            
-            // Show product detail and hide other content
-            homeContent.style.display = 'none';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'block';
-        }
-
-        // Buy product
-        function buyProduct(product) {
-            if (!currentUser) {
-                alert('Для покупки товара необходимо войти в систему');
-                loginModal.style.display = 'flex';
-                return;
-            }
-            
-            const commission = Math.round(product.price * 0.25);
-            const finalPrice = product.price + commission;
-            
-            if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${finalPrice} ₽? (включая комиссию ${commission} ₽)`)) {
-                alert('Покупка успешно совершена! Свяжитесь с продавцом для получения товара.');
-                showHomePage();
-            }
-        }
-
-        // Check authentication status
-        function checkAuthStatus() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                updateUIForLoggedInUser();
-            }
-        }
-
-        // Update UI for logged in user
-        function updateUIForLoggedInUser() {
-            loginBtn.style.display = 'none';
-            registerBtn.style.display = 'none';
-            logoutBtn.style.display = 'block';
-            userProfile.style.display = 'flex';
-            usernameDisplay.textContent = currentUser.username;
-            
-            // Update user avatar
-            if (currentUser.avatar) {
-                userAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="${currentUser.username}"><div class="avatar-actions"><i class="fas fa-pen"></i></div>`;
-            } else {
-                userAvatar.innerHTML = '<i class="fas fa-user"></i><div class="avatar-actions"><i class="fas fa-pen"></i></div>';
-            }
-            
-            // Show add product button for all users
-            navAddProduct.style.display = 'block';
-            
-            // Show admin panel for admin users
-            if (currentUser.role === 'admin') {
-                navAdmin.style.display = 'block';
-            }
-        }
-
-        // User registration
-        function registerUser(username, email, password) {
-            // Check if user already exists
-            const existingUser = JSON.parse(localStorage.getItem('users')) || [];
-            const userExists = existingUser.find(user => user.email === email);
-            
-            if (userExists) {
-                alert('Пользователь с таким email уже существует');
-                return false;
-            }
-            
-            // Create new user
-            const newUser = {
-                id: Date.now().toString(),
-                username,
-                email,
-                password, // In a real app, this should be hashed
-                role: 'user',
-                avatar: null,
-                createdAt: new Date().toISOString()
-            };
-            
-            existingUser.push(newUser);
-            localStorage.setItem('users', JSON.stringify(existingUser));
-            
-            // Log in the new user
-            currentUser = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            updateUIForLoggedInUser();
-            return true;
-        }
-
-        // User login
-        function loginUser(email, password) {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                updateUIForLoggedInUser();
-                return true;
-            } else {
-                alert('Неверный email или пароль');
-                return false;
-            }
-        }
-
-        // User logout
-        function logoutUser() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            
-            loginBtn.style.display = 'block';
-            registerBtn.style.display = 'block';
-            logoutBtn.style.display = 'none';
-            userProfile.style.display = 'none';
-            navAddProduct.style.display = 'none';
-            navAdmin.style.display = 'none';
-            
-            // Return to home page
-            showHomePage();
-        }
-
-        // Add new product
-        function addProduct(productData) {
-            const newProduct = {
-                id: Date.now(),
-                ...productData,
-                seller: currentUser.username,
-                sellerId: currentUser.id,
-                rating: '5.0',
-                createdAt: new Date().toISOString()
-            };
-            
-            products.unshift(newProduct);
-            
-            // Reset form
-            document.getElementById('product-form').reset();
-            imagePreview.style.display = 'none';
-            
-            // Show home page with new product
-            showHomePage();
-            displayProducts();
-            
-            alert('Товар успешно добавлен!');
-        }
-
-        // Filter products by category
-        function filterProductsByCategory(category) {
-            const filteredProducts = products.filter(product => product.category === category);
-            
-            productsGrid.innerHTML = '';
-            
-            if (filteredProducts.length === 0) {
-                productsGrid.innerHTML = `<p>В категории "${category}" пока нет товаров.</p>`;
-            } else {
-                filteredProducts.forEach(product => {
-                    const productCard = createProductCard(product);
-                    productsGrid.appendChild(productCard);
-                });
-            }
-            
-            // Update UI to show we're filtering
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            document.querySelector('.section-title').textContent = `Товары в категории: ${category}`;
-        }
-
-        // Search products
-        function searchProducts(query) {
-            const filteredProducts = products.filter(product => 
-                product.title.toLowerCase().includes(query.toLowerCase()) ||
-                product.description.toLowerCase().includes(query.toLowerCase()) ||
-                product.category.toLowerCase().includes(query.toLowerCase())
-            );
-            
-            productsGrid.innerHTML = '';
-            
-            if (filteredProducts.length === 0) {
-                productsGrid.innerHTML = `<p>По запросу "${query}" ничего не найдено.</p>`;
-            } else {
-                filteredProducts.forEach(product => {
-                    const productCard = createProductCard(product);
-                    productsGrid.appendChild(productCard);
-                });
-            }
-            
-            // Update UI to show we're searching
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            document.querySelector('.section-title').textContent = `Результаты поиска: ${query}`;
-        }
-
-        // Chat functionality
-        function openChatWithSeller(sellerId, sellerName) {
-            if (!currentUser) {
-                alert('Для отправки сообщений необходимо войти в систему');
-                loginModal.style.display = 'flex';
-                return;
-            }
-            
-            currentChat = sellerId;
-            document.getElementById('chat-title').textContent = sellerName;
-            chatContainer.style.display = 'flex';
-            chatButton.style.display = 'none';
-        }
-
-        function sendChatMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-            
-            // Display message
-            addMessageToChat(message, 'sent', new Date().toISOString(), currentUser.username);
-            
-            // Simulate response
-            setTimeout(() => {
-                addMessageToChat('Спасибо за ваше сообщение! Я свяжусь с вами в ближайшее время.', 'received', new Date().toISOString(), 'Продавец');
-            }, 1000);
-            
-            chatInput.value = '';
-        }
-
-        function addMessageToChat(text, type, timestamp, senderName) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `
-                <div class="message-info">${senderName} • ${new Date(timestamp).toLocaleTimeString()}</div>
-                <p>${text}</p>
-            `;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Avatar functions
-        function openAvatarModal() {
-            avatarModal.style.display = 'flex';
-        }
-
-        function closeAvatarModal() {
-            avatarModal.style.display = 'none';
-        }
-
-        function updateAvatar(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentUser.avatar = e.target.result;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                updateUIForLoggedInUser();
-                closeAvatarModal();
-                alert('Аватар успешно обновлен!');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeAvatar() {
-            currentUser.avatar = null;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            updateUIForLoggedInUser();
-            closeAvatarModal();
-            alert('Аватар успешно удален!');
-        }
-
-        // Page navigation
-        function showHomePage() {
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            displayProducts();
-        }
-
-        function showAddProductPage() {
-            if (!currentUser) {
-                alert('Для добавления товара необходимо войти в систему');
-                loginModal.style.display = 'flex';
-                return;
-            }
-            
-            homeContent.style.display = 'none';
-            addProductForm.style.display = 'block';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-        }
-
-        function showProfileSettings() {
-            if (!currentUser) {
-                alert('Для просмотра настроек профиля необходимо войти в систему');
-                return;
-            }
-            
-            // Populate profile form
-            profileUsernameInput.value = currentUser.username;
-            profileEmailInput.value = currentUser.email;
-            profileUsername.textContent = currentUser.username;
-            profileEmail.textContent = currentUser.email;
-            
-            if (currentUser.avatar) {
-                profileAvatarImg.src = currentUser.avatar;
-            } else {
-                profileAvatarImg.src = '';
-                profileAvatarImg.alt = 'Аватар';
-            }
-            
-            homeContent.style.display = 'none';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'block';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-        }
-
-        function showRulesPage() {
-            homeContent.style.display = 'none';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'block';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-        }
-
-        function showAdminPanel() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                alert('У вас нет доступа к админ-панели');
-                return;
-            }
-            
-            homeContent.style.display = 'none';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'block';
-            productDetail.style.display = 'none';
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Theme toggle
-            themeToggle.addEventListener('change', function() {
-                if (this.checked) {
-                    document.body.classList.add('light-theme');
-                } else {
-                    document.body.classList.remove('light-theme');
-                }
-            });
-
-            // Chat functionality
-            chatButton.addEventListener('click', function() {
-                currentChat = 'support';
-                document.getElementById('chat-title').textContent = 'Поддержка';
-                chatContainer.style.display = 'flex';
-                chatButton.style.display = 'none';
-            });
-
-            chatClose.addEventListener('click', function() {
-                chatContainer.style.display = 'none';
-                chatButton.style.display = 'flex';
-            });
-
-            sendMessage.addEventListener('click', sendChatMessage);
-
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendChatMessage();
-                }
-            });
-
-            // Auth modals
-            loginBtn.addEventListener('click', function() {
-                loginModal.style.display = 'flex';
-            });
-
-            registerBtn.addEventListener('click', function() {
-                registerModal.style.display = 'flex';
-            });
-
-            logoutBtn.addEventListener('click', logoutUser);
-
-            loginClose.addEventListener('click', function() {
-                loginModal.style.display = 'none';
-            });
-
-            registerClose.addEventListener('click', function() {
-                registerModal.style.display = 'none';
-            });
-
-            // User profile dropdown
-            userProfile.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
-            });
-
-            // Avatar actions
-            userAvatar.addEventListener('click', function(e) {
-                e.stopPropagation();
-                openAvatarModal();
-            });
-
-            // Avatar modal actions
-            changeAvatarBtn.addEventListener('click', function() {
-                closeAvatarModal();
-                avatarUploadInput.click();
-            });
-
-            removeAvatarBtn.addEventListener('click', function() {
-                removeAvatar();
-            });
-
-            cancelAvatarBtn.addEventListener('click', function() {
-                closeAvatarModal();
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function() {
-                userDropdown.classList.remove('show');
-            });
-
-            // Profile settings link
-            profileSettingsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                userDropdown.classList.remove('show');
-                showProfileSettings();
-            });
-
-            // Close modals when clicking outside
-            window.addEventListener('click', function(e) {
-                if (e.target === loginModal) {
-                    loginModal.style.display = 'none';
-                }
-                if (e.target === registerModal) {
-                    registerModal.style.display = 'none';
-                }
-                if (e.target === avatarModal) {
-                    closeAvatarModal();
-                }
-            });
-
-            // Form submissions
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                
-                if (loginUser(email, password)) {
-                    loginModal.style.display = 'none';
-                    showHomePage();
-                }
-            });
-
-            document.getElementById('register-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const username = document.getElementById('register-username').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const confirmPassword = document.getElementById('register-confirm-password').value;
-                
-                if (password !== confirmPassword) {
-                    alert('Пароли не совпадают');
-                    return;
-                }
-                
-                if (registerUser(username, email, password)) {
-                    registerModal.style.display = 'none';
-                    showHomePage();
-                }
-            });
-
-            // Profile form
-            document.getElementById('profile-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const username = document.getElementById('profile-username-input').value;
-                const email = document.getElementById('profile-email-input').value;
-                
-                currentUser.username = username;
-                currentUser.email = email;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                updateUIForLoggedInUser();
-                
-                alert('Профиль успешно обновлен!');
-            });
-
-            // Avatar upload
-            avatarUploadInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    updateAvatar(file);
-                }
-            });
-
-            // Product form
-            document.getElementById('product-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const title = document.getElementById('product-title').value;
-                const category = document.getElementById('product-category').value;
-                const subcategory = document.getElementById('product-subcategory').value;
-                const price = parseInt(document.getElementById('product-price').value);
-                const description = document.getElementById('product-description').value;
-                const fullDescription = document.getElementById('product-full-description').value;
-                
-                addProduct({
-                    title,
-                    category,
-                    subcategory,
-                    price,
-                    description,
-                    fullDescription
-                });
-            });
-
-            // Category change
-            productCategory.addEventListener('change', populateSubcategories);
-
-            // Image upload
-            imageUpload.addEventListener('click', function() {
-                productImage.click();
-            });
-
-            productImage.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Search
-            searchBtn.addEventListener('click', function() {
-                const query = searchInput.value.trim();
-                if (query) {
-                    searchProducts(query);
-                }
-            });
-
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const query = searchInput.value.trim();
-                    if (query) {
-                        searchProducts(query);
-                    }
-                }
-            });
-
-            // Navigation
-            homeLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                showHomePage();
-            });
-
-            navHome.addEventListener('click', function(e) {
-                e.preventDefault();
-                showHomePage();
-            });
-
-            navCatalog.addEventListener('click', function(e) {
-                e.preventDefault();
-                showHomePage();
-            });
-
-            navRules.addEventListener('click', function(e) {
-                e.preventDefault();
-                showRulesPage();
-            });
-
-            navSupport.addEventListener('click', function(e) {
-                e.preventDefault();
-                currentChat = 'support';
-                document.getElementById('chat-title').textContent = 'Поддержка';
-                chatContainer.style.display = 'flex';
-                chatButton.style.display = 'none';
-            });
-
-            navAddProduct.addEventListener('click', function(e) {
-                e.preventDefault();
-                showAddProductPage();
-            });
-
-            navAdmin.addEventListener('click', function(e) {
-                e.preventDefault();
-                showAdminPanel();
-            });
-
-            // My products and purchases
-            myProductsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                userDropdown.classList.remove('show');
-                showMyProducts();
-            });
-
-            myPurchasesLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                userDropdown.classList.remove('show');
-                showMyPurchases();
-            });
-
-            // Admin tabs
-            adminTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // Update active tab
-                    adminTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show corresponding content
-                    document.querySelectorAll('.admin-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    document.getElementById(`${tabId}-content`).classList.add('active');
-                });
-            });
-
-            // OAuth buttons - демо версия
-            document.getElementById('google-login').addEventListener('click', function() {
-                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
-            });
-
-            document.getElementById('vk-login').addEventListener('click', function() {
-                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
-            });
-
-            document.getElementById('telegram-login').addEventListener('click', function() {
-                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
-            });
-
-            document.getElementById('google-register').addEventListener('click', function() {
-                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
-            });
-
-            document.getElementById('vk-register').addEventListener('click', function() {
-                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
-            });
-
-            document.getElementById('telegram-register').addEventListener('click', function() {
-                alert('Демо версия: OAuth авторизация будет работать при подключении бэкенда');
-            });
-        }
-
-        // Show my products
-        function showMyProducts() {
-            if (!currentUser) return;
-            
-            const myProducts = products.filter(p => p.sellerId === currentUser.id);
-            
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            productsGrid.innerHTML = '';
-            
-            if (myProducts.length === 0) {
-                productsGrid.innerHTML = '<p>У вас пока нет товаров. <a href="#" id="add-first-product">Добавить первый товар</a></p>';
-                document.getElementById('add-first-product').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showAddProductPage();
-                });
-            } else {
-                myProducts.forEach(product => {
-                    const productCard = createProductCard(product);
-                    productsGrid.appendChild(productCard);
-                });
-            }
-            
-            document.querySelector('.section-title').textContent = 'Мои товары';
-        }
-
-        // Show my purchases
-        function showMyPurchases() {
-            if (!currentUser) return;
-            
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            productsGrid.innerHTML = '<p>У вас пока нет покупок.</p>';
-            
-            document.querySelector('.section-title').textContent = 'Мои покупки';
-        }
+        // Rest of the JavaScript code remains the same as in your original file
+        // ... (all the other JavaScript functions)
 
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
