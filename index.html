@@ -252,6 +252,36 @@
             color: var(--accent-color);
         }
 
+        /* Avatar Modal */
+        .avatar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-modal-content {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            width: 300px;
+            max-width: 90%;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .avatar-modal-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
         /* Main Content */
         .main-content {
             display: flex;
@@ -1270,6 +1300,19 @@
         </div>
     </div>
 
+    <!-- Avatar Modal -->
+    <div class="avatar-modal" id="avatar-modal">
+        <div class="avatar-modal-content">
+            <h3>Управление аватаром</h3>
+            <p>Выберите действие для вашего аватара</p>
+            <div class="avatar-modal-actions">
+                <button class="btn btn-primary" id="change-avatar-btn">Изменить</button>
+                <button class="btn btn-outline" id="remove-avatar-btn">Удалить</button>
+                <button class="btn btn-outline" id="cancel-avatar-btn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Chat Button -->
     <div class="chat-button" id="chat-button">
         <i class="fas fa-comments"></i>
@@ -1398,6 +1441,17 @@
     </footer>
 
     <script>
+        // Конфигурация API
+        const API_BASE = 'http://localhost:5000/api';
+        const AUTH_BASE = 'http://localhost:5000/auth';
+
+        // OAuth URLs
+        const OAUTH_URLS = {
+            google: `${AUTH_BASE}/google`,
+            vk: `${AUTH_BASE}/vk`,
+            telegram: `${AUTH_BASE}/telegram`
+        };
+
         // Game and app data with real logos
         const games = [
             { name: "GTA 5 Online", icon: "https://upload.wikimedia.org/wikipedia/ru/a/a5/Grand_Theft_Auto_V_cover.png" },
@@ -1439,13 +1493,9 @@
 
         // Application state
         let currentUser = null;
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let supportMessages = JSON.parse(localStorage.getItem('supportMessages')) || [];
-        let chats = JSON.parse(localStorage.getItem('chats')) || {};
-        let currentChat = 'support';
-        let currentProduct = null;
-        const COMMISSION_RATE = 0.25; // 25% комиссия
+        let products = [];
+        let chats = [];
+        let currentChat = null;
 
         // DOM Elements
         const gamesCategory = document.getElementById('games-category');
@@ -1502,30 +1552,191 @@
         const profileEmailInput = document.getElementById('profile-email-input');
         const myProductsLink = document.getElementById('my-products-link');
         const myPurchasesLink = document.getElementById('my-purchases-link');
+        const avatarModal = document.getElementById('avatar-modal');
+        const changeAvatarBtn = document.getElementById('change-avatar-btn');
+        const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+        const cancelAvatarBtn = document.getElementById('cancel-avatar-btn');
 
-        // Initialize the application
-        function init() {
-            populateCategories();
-            populatePlatforms();
-            populateProductCategories();
-            displayProducts();
-            checkAuthStatus();
-            loadSupportMessages();
-            setupEventListeners();
+        // API функции
+        async function apiRequest(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            const config = {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            };
+
+            if (options.body) {
+                config.body = JSON.stringify(options.body);
+            }
+
+            const response = await fetch(url, config);
             
-            // Create admin user if not exists
-            if (!users.find(u => u.role === 'admin')) {
-                const adminUser = {
-                    id: 'admin',
-                    username: 'Администратор',
-                    email: 'admin@rocketmarket.com',
-                    password: 'admin123',
-                    role: 'admin',
-                    avatar: null,
-                    createdAt: new Date().toISOString()
-                };
-                users.push(adminUser);
-                localStorage.setItem('users', JSON.stringify(users));
+            if (response.status === 401) {
+                // Не авторизован
+                currentUser = null;
+                updateUIForLoggedOutUser();
+                throw new Error('Not authenticated');
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // Auth functions
+        async function checkAuth() {
+            try {
+                const user = await apiRequest('/user');
+                currentUser = user;
+                updateUIForLoggedInUser();
+                return user;
+            } catch (error) {
+                currentUser = null;
+                updateUIForLoggedOutUser();
+                return null;
+            }
+        }
+
+        async function registerUser(username, email, password) {
+            try {
+                const user = await apiRequest('/register', {
+                    method: 'POST',
+                    body: { username, email, password }
+                });
+                currentUser = user;
+                updateUIForLoggedInUser();
+                return user;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
+
+        async function loginUser(email, password) {
+            try {
+                const user = await apiRequest('/login', {
+                    method: 'POST',
+                    body: { email, password }
+                });
+                currentUser = user;
+                updateUIForLoggedInUser();
+                return user;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                await apiRequest('/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                currentUser = null;
+                updateUIForLoggedOutUser();
+            }
+        }
+
+        // OAuth redirect functions
+        function oauthLogin(provider) {
+            window.location.href = OAUTH_URLS[provider];
+        }
+
+        // Products functions
+        async function loadProducts() {
+            try {
+                products = await apiRequest('/products');
+                displayProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        async function addProduct(productData) {
+            try {
+                const product = await apiRequest('/products', {
+                    method: 'POST',
+                    body: productData
+                });
+                products.unshift(product);
+                displayProducts();
+                return product;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
+
+        // Chat functions
+        async function loadChats() {
+            try {
+                chats = await apiRequest('/chats');
+                return chats;
+            } catch (error) {
+                console.error('Error loading chats:', error);
+                return [];
+            }
+        }
+
+        async function sendMessage(chatId, text) {
+            try {
+                const chat = await apiRequest(`/chats/${chatId}/messages`, {
+                    method: 'POST',
+                    body: { text }
+                });
+                return chat;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
+
+        // Avatar functions
+        function openAvatarModal() {
+            avatarModal.style.display = 'flex';
+        }
+
+        function closeAvatarModal() {
+            avatarModal.style.display = 'none';
+        }
+
+        async function updateAvatar(file) {
+            try {
+                const formData = new FormData();
+                formData.append('avatar', file);
+                
+                const response = await fetch(`${API_BASE}/user/avatar`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to update avatar');
+                }
+                
+                const user = await response.json();
+                currentUser = user;
+                updateUIForLoggedInUser();
+                return user;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
+
+        async function removeAvatar() {
+            try {
+                const user = await apiRequest('/user/avatar', {
+                    method: 'DELETE'
+                });
+                currentUser = user;
+                updateUIForLoggedInUser();
+                return user;
+            } catch (error) {
+                throw new Error(error.message);
             }
         }
 
@@ -1696,9 +1907,9 @@
                     <div class="product-price">${product.price} ₽</div>
                     <div class="product-seller">
                         <div class="seller-avatar">
-                            ${product.sellerAvatar ? `<img src="${product.sellerAvatar}" alt="${product.seller}">` : '<i class="fas fa-user"></i>'}
+                            ${product.seller && product.seller.avatar ? `<img src="${product.seller.avatar}" alt="${product.seller.username}">` : '<i class="fas fa-user"></i>'}
                         </div>
-                        <span>${product.seller}</span>
+                        <span>${product.seller ? product.seller.username : 'Unknown'}</span>
                         <div class="seller-rating">
                             <i class="fas fa-star"></i>
                             <span>${product.rating || '5.0'}</span>
@@ -1706,7 +1917,7 @@
                     </div>
                     <div class="product-actions">
                         <button class="btn btn-primary buy-btn">Купить</button>
-                        <button class="btn-message message-btn" data-seller="${product.sellerId}">
+                        <button class="btn-message message-btn" data-seller="${product.seller ? product.seller._id : ''}">
                             <i class="fas fa-comment"></i> Написать
                         </button>
                     </div>
@@ -1723,7 +1934,9 @@
             const messageBtn = productCard.querySelector('.message-btn');
             messageBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                openChatWithSeller(product.sellerId, product.seller);
+                if (product.seller) {
+                    openChatWithSeller(product.seller._id, product.seller.username);
+                }
             });
             
             productCard.addEventListener('click', () => {
@@ -1747,9 +1960,9 @@
                         <div class="product-detail-price">${product.price} ₽</div>
                         <div class="product-detail-seller">
                             <div class="seller-avatar">
-                                ${product.sellerAvatar ? `<img src="${product.sellerAvatar}" alt="${product.seller}">` : '<i class="fas fa-user"></i>'}
+                                ${product.seller && product.seller.avatar ? `<img src="${product.seller.avatar}" alt="${product.seller.username}">` : '<i class="fas fa-user"></i>'}
                             </div>
-                            <span>${product.seller}</span>
+                            <span>${product.seller ? product.seller.username : 'Unknown'}</span>
                             <div class="seller-rating">
                                 <i class="fas fa-star"></i>
                                 <span>${product.rating || '5.0'}</span>
@@ -1778,7 +1991,9 @@
             });
             
             document.getElementById('message-seller-btn').addEventListener('click', () => {
-                openChatWithSeller(product.sellerId, product.seller);
+                if (product.seller) {
+                    openChatWithSeller(product.seller._id, product.seller.username);
+                }
             });
             
             // Show product detail and hide other content
@@ -1799,124 +2014,18 @@
             }
             
             // Calculate commission and final price
-            const commission = Math.round(product.price * COMMISSION_RATE);
+            const commission = Math.round(product.price * 0.25);
             const finalPrice = product.price + commission;
             
             if (confirm(`Вы уверены, что хотите купить "${product.title}" за ${finalPrice} ₽? (включая комиссию ${commission} ₽)`)) {
                 // In a real application, here would be payment processing
                 alert('Покупка успешно совершена! Свяжитесь с продавцом для получения товара.');
                 
-                // Record the purchase
-                const purchase = {
-                    productId: product.id,
-                    productTitle: product.title,
-                    buyerId: currentUser.id,
-                    buyerName: currentUser.username,
-                    sellerId: product.sellerId,
-                    sellerName: product.seller,
-                    price: product.price,
-                    commission: commission,
-                    finalPrice: finalPrice,
-                    date: new Date().toISOString()
-                };
-                
-                let purchases = JSON.parse(localStorage.getItem('purchases')) || [];
-                purchases.push(purchase);
-                localStorage.setItem('purchases', JSON.stringify(purchases));
-                
-                // Send notification to seller
-                sendNotificationToSeller(product.sellerId, `Пользователь ${currentUser.username} купил ваш товар "${product.title}"`);
-                
                 // Remove product from listings
-                products = products.filter(p => p.id !== product.id);
-                localStorage.setItem('products', JSON.stringify(products));
+                products = products.filter(p => p._id !== product._id);
                 
                 // Return to home page
                 showHomePage();
-            }
-        }
-
-        // Send notification to seller
-        function sendNotificationToSeller(sellerId, message) {
-            // In a real application, this would send a push notification or email
-            console.log(`Notification to seller ${sellerId}: ${message}`);
-            
-            // Add to support messages for admin to see
-            const notification = {
-                id: generateId(),
-                userId: sellerId,
-                username: 'System',
-                message: message,
-                timestamp: new Date().toISOString(),
-                type: 'notification'
-            };
-            
-            supportMessages.push(notification);
-            localStorage.setItem('supportMessages', JSON.stringify(supportMessages));
-            
-            // Update admin panel if admin is viewing
-            if (currentUser && currentUser.role === 'admin') {
-                loadSupportMessages();
-            }
-        }
-
-        // Filter products by category
-        function filterProductsByCategory(category) {
-            const filteredProducts = products.filter(product => 
-                product.category === category && 
-                new Date(product.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-            );
-            
-            productsGrid.innerHTML = '';
-            
-            filteredProducts.forEach(product => {
-                const productCard = createProductCard(product);
-                productsGrid.appendChild(productCard);
-            });
-            
-            // Update UI to show we're filtering
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            document.querySelector('.section-title').textContent = `Товары в категории: ${category}`;
-        }
-
-        // Search products
-        function searchProducts(query) {
-            const filteredProducts = products.filter(product => 
-                product.title.toLowerCase().includes(query.toLowerCase()) ||
-                product.description.toLowerCase().includes(query.toLowerCase()) ||
-                product.category.toLowerCase().includes(query.toLowerCase())
-            );
-            
-            productsGrid.innerHTML = '';
-            
-            filteredProducts.forEach(product => {
-                const productCard = createProductCard(product);
-                productsGrid.appendChild(productCard);
-            });
-            
-            // Update UI to show we're searching
-            homeContent.style.display = 'block';
-            addProductForm.style.display = 'none';
-            profileSettings.style.display = 'none';
-            rulesPage.style.display = 'none';
-            adminPanel.style.display = 'none';
-            productDetail.style.display = 'none';
-            
-            document.querySelector('.section-title').textContent = `Результаты поиска: ${query}`;
-        }
-
-        // Check authentication status
-        function checkAuthStatus() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                updateUIForLoggedInUser();
             }
         }
 
@@ -1944,317 +2053,14 @@
             }
         }
 
-        // User registration
-        function registerUser(username, email, password) {
-            // Check if user already exists
-            const existingUser = users.find(user => user.email === email);
-            if (existingUser) {
-                alert('Пользователь с таким email уже существует');
-                return false;
-            }
-            
-            // Create new user
-            const newUser = {
-                id: generateId(),
-                username,
-                email,
-                password, // In a real app, this should be hashed
-                role: 'user',
-                avatar: null,
-                createdAt: new Date().toISOString()
-            };
-            
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // Log in the new user
-            currentUser = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            updateUIForLoggedInUser();
-            return true;
-        }
-
-        // User login
-        function loginUser(email, password) {
-            const user = users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                updateUIForLoggedInUser();
-                return true;
-            } else {
-                alert('Неверный email или пароль');
-                return false;
-            }
-        }
-
-        // User logout
-        function logoutUser() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            
+        // Update UI for logged out user
+        function updateUIForLoggedOutUser() {
             loginBtn.style.display = 'block';
             registerBtn.style.display = 'block';
             logoutBtn.style.display = 'none';
             userProfile.style.display = 'none';
             navAddProduct.style.display = 'none';
             navAdmin.style.display = 'none';
-            
-            // Return to home page
-            showHomePage();
-        }
-
-        // Update user profile
-        function updateUserProfile(username, email, avatar) {
-            if (!currentUser) return;
-            
-            // Update user data
-            currentUser.username = username;
-            currentUser.email = email;
-            if (avatar) {
-                currentUser.avatar = avatar;
-            }
-            
-            // Update in users array
-            const userIndex = users.findIndex(u => u.id === currentUser.id);
-            if (userIndex !== -1) {
-                users[userIndex] = currentUser;
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-            
-            // Update current user in localStorage
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Update UI
-            updateUIForLoggedInUser();
-            
-            // Update profile display
-            profileUsername.textContent = currentUser.username;
-            profileEmail.textContent = currentUser.email;
-            if (currentUser.avatar) {
-                profileAvatarImg.src = currentUser.avatar;
-            }
-            
-            alert('Профиль успешно обновлен!');
-        }
-
-        // Add new product
-        function addProduct(productData) {
-            const newProduct = {
-                id: generateId(),
-                ...productData,
-                seller: currentUser.username,
-                sellerId: currentUser.id,
-                sellerAvatar: currentUser.avatar,
-                rating: '5.0',
-                createdAt: new Date().toISOString()
-            };
-            
-            products.push(newProduct);
-            localStorage.setItem('products', JSON.stringify(products));
-            
-            // Reset form
-            document.getElementById('product-form').reset();
-            imagePreview.style.display = 'none';
-            
-            // Show home page with new product
-            showHomePage();
-            displayProducts();
-            
-            alert('Товар успешно добавлен!');
-        }
-
-        // Generate unique ID
-        function generateId() {
-            return '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        // Chat functionality
-        function openChatWithSeller(sellerId, sellerName) {
-            if (!currentUser) {
-                alert('Для отправки сообщений необходимо войти в систему');
-                loginModal.style.display = 'flex';
-                return;
-            }
-            
-            currentChat = sellerId;
-            document.getElementById('chat-title').textContent = sellerName;
-            chatContainer.style.display = 'flex';
-            chatButton.style.display = 'none';
-            
-            // Load chat history
-            loadChatMessages(sellerId);
-        }
-
-        function loadChatMessages(chatId) {
-            // Get or create chat
-            if (!chats[chatId]) {
-                chats[chatId] = [];
-            }
-            
-            // Load messages
-            chatMessages.innerHTML = '';
-            chats[chatId].forEach(msg => {
-                addMessageToChat(msg.text, msg.sender === currentUser.id ? 'sent' : 'received', msg.timestamp, msg.senderName);
-            });
-            
-            // If no messages, add welcome message
-            if (chats[chatId].length === 0) {
-                addMessageToChat('Здравствуйте! Чем могу помочь?', 'received', new Date().toISOString(), chatId === 'support' ? 'Поддержка' : 'Продавец');
-            }
-        }
-
-        function sendChatMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-            
-            // Create message object
-            const messageObj = {
-                id: generateId(),
-                text: message,
-                sender: currentUser.id,
-                senderName: currentUser.username,
-                timestamp: new Date().toISOString()
-            };
-            
-            // Add to chat
-            if (!chats[currentChat]) {
-                chats[currentChat] = [];
-            }
-            chats[currentChat].push(messageObj);
-            localStorage.setItem('chats', JSON.stringify(chats));
-            
-            // Display message
-            addMessageToChat(message, 'sent', messageObj.timestamp, currentUser.username);
-            
-            // If this is a support chat and user is admin, don't add to support messages
-            if (currentChat !== 'support' || currentUser.role !== 'admin') {
-                // Add to support messages for admin to see
-                const supportMessage = {
-                    id: generateId(),
-                    userId: currentUser.id,
-                    username: currentUser.username,
-                    message: message,
-                    timestamp: new Date().toISOString(),
-                    chatId: currentChat
-                };
-                
-                supportMessages.push(supportMessage);
-                localStorage.setItem('supportMessages', JSON.stringify(supportMessages));
-            }
-            
-            chatInput.value = '';
-            
-            // If admin is viewing support messages, update them
-            if (currentUser.role === 'admin' && document.getElementById('support-content').classList.contains('active')) {
-                loadSupportMessages();
-            }
-        }
-
-        function addMessageToChat(text, type, timestamp, senderName) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `
-                <div class="message-info">${senderName} • ${new Date(timestamp).toLocaleString()}</div>
-                <p>${text}</p>
-            `;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Admin functionality
-        function loadSupportMessages() {
-            supportMessagesContainer.innerHTML = '';
-            
-            supportMessages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'support-message';
-                messageDiv.innerHTML = `
-                    <div class="message-meta">
-                        <span>${msg.username}</span>
-                        <span>${new Date(msg.timestamp).toLocaleString()}</span>
-                    </div>
-                    <p>${msg.message}</p>
-                    ${msg.type !== 'notification' ? `<button class="btn btn-primary reply-btn" data-userid="${msg.userId}" data-username="${msg.username}">Ответить</button>` : ''}
-                `;
-                supportMessagesContainer.appendChild(messageDiv);
-            });
-            
-            // Add event listeners to reply buttons
-            document.querySelectorAll('.reply-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-userid');
-                    const username = this.getAttribute('data-username');
-                    openChatWithUser(userId, username);
-                });
-            });
-        }
-
-        function openChatWithUser(userId, username) {
-            currentChat = userId;
-            document.getElementById('chat-title').textContent = username;
-            chatContainer.style.display = 'flex';
-            chatButton.style.display = 'none';
-            
-            // Load chat history
-            loadChatMessages(userId);
-        }
-
-        // OAuth integration simulation
-        function oauthLogin(provider) {
-            // In a real application, this would redirect to OAuth provider
-            // For simulation, we'll create a user based on the provider
-            
-            let username, email;
-            
-            switch(provider) {
-                case 'google':
-                    username = 'Google User';
-                    email = 'googleuser@example.com';
-                    break;
-                case 'vk':
-                    username = 'VK User';
-                    email = 'vkuser@example.com';
-                    break;
-                case 'telegram':
-                    username = 'Telegram User';
-                    email = 'telegramuser@example.com';
-                    break;
-            }
-            
-            // Check if user already exists
-            let user = users.find(u => u.email === email);
-            
-            if (!user) {
-                // Create new user
-                user = {
-                    id: generateId(),
-                    username,
-                    email,
-                    password: 'oauth', // Not used for OAuth
-                    role: 'user',
-                    avatar: null,
-                    oauthProvider: provider,
-                    createdAt: new Date().toISOString()
-                };
-                
-                users.push(user);
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-            
-            // Log in the user
-            currentUser = user;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            updateUIForLoggedInUser();
-            
-            // Close modal and show home page
-            loginModal.style.display = 'none';
-            registerModal.style.display = 'none';
-            showHomePage();
-            
-            alert(`Успешный вход через ${provider === 'google' ? 'Google' : provider === 'vk' ? 'ВКонтакте' : 'Telegram'}!`);
         }
 
         // Page navigation
@@ -2331,8 +2137,100 @@
             rulesPage.style.display = 'none';
             adminPanel.style.display = 'block';
             productDetail.style.display = 'none';
+        }
+
+        // Filter products by category
+        function filterProductsByCategory(category) {
+            const filteredProducts = products.filter(product => 
+                product.category === category
+            );
             
-            loadSupportMessages();
+            productsGrid.innerHTML = '';
+            
+            filteredProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                productsGrid.appendChild(productCard);
+            });
+            
+            // Update UI to show we're filtering
+            homeContent.style.display = 'block';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+            
+            document.querySelector('.section-title').textContent = `Товары в категории: ${category}`;
+        }
+
+        // Search products
+        function searchProducts(query) {
+            const filteredProducts = products.filter(product => 
+                product.title.toLowerCase().includes(query.toLowerCase()) ||
+                product.description.toLowerCase().includes(query.toLowerCase()) ||
+                product.category.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            productsGrid.innerHTML = '';
+            
+            filteredProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                productsGrid.appendChild(productCard);
+            });
+            
+            // Update UI to show we're searching
+            homeContent.style.display = 'block';
+            addProductForm.style.display = 'none';
+            profileSettings.style.display = 'none';
+            rulesPage.style.display = 'none';
+            adminPanel.style.display = 'none';
+            productDetail.style.display = 'none';
+            
+            document.querySelector('.section-title').textContent = `Результаты поиска: ${query}`;
+        }
+
+        // Chat functionality
+        function openChatWithSeller(sellerId, sellerName) {
+            if (!currentUser) {
+                alert('Для отправки сообщений необходимо войти в систему');
+                loginModal.style.display = 'flex';
+                return;
+            }
+            
+            currentChat = sellerId;
+            document.getElementById('chat-title').textContent = sellerName;
+            chatContainer.style.display = 'flex';
+            chatButton.style.display = 'none';
+        }
+
+        function sendChatMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Create message object
+            const messageObj = {
+                id: Date.now().toString(),
+                text: message,
+                sender: currentUser.id,
+                senderName: currentUser.username,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Display message
+            addMessageToChat(message, 'sent', messageObj.timestamp, currentUser.username);
+            
+            chatInput.value = '';
+        }
+
+        function addMessageToChat(text, type, timestamp, senderName) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <div class="message-info">${senderName} • ${new Date(timestamp).toLocaleString()}</div>
+                <p>${text}</p>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         // Setup event listeners
@@ -2352,7 +2250,6 @@
                 document.getElementById('chat-title').textContent = 'Поддержка';
                 chatContainer.style.display = 'flex';
                 chatButton.style.display = 'none';
-                loadChatMessages('support');
             });
 
             chatClose.addEventListener('click', function() {
@@ -2393,6 +2290,32 @@
                 userDropdown.classList.toggle('show');
             });
 
+            // Avatar actions
+            userAvatar.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openAvatarModal();
+            });
+
+            // Avatar modal actions
+            changeAvatarBtn.addEventListener('click', function() {
+                closeAvatarModal();
+                avatarUploadInput.click();
+            });
+
+            removeAvatarBtn.addEventListener('click', async function() {
+                try {
+                    await removeAvatar();
+                    closeAvatarModal();
+                    alert('Аватар успешно удален!');
+                } catch (error) {
+                    alert('Ошибка при удалении аватара: ' + error.message);
+                }
+            });
+
+            cancelAvatarBtn.addEventListener('click', function() {
+                closeAvatarModal();
+            });
+
             // Close dropdown when clicking outside
             document.addEventListener('click', function() {
                 userDropdown.classList.remove('show');
@@ -2405,12 +2328,6 @@
                 showProfileSettings();
             });
 
-            // Avatar actions
-            userAvatar.addEventListener('click', function(e) {
-                e.stopPropagation();
-                avatarUploadInput.click();
-            });
-
             // Close modals when clicking outside
             window.addEventListener('click', function(e) {
                 if (e.target === loginModal) {
@@ -2419,21 +2336,27 @@
                 if (e.target === registerModal) {
                     registerModal.style.display = 'none';
                 }
+                if (e.target === avatarModal) {
+                    closeAvatarModal();
+                }
             });
 
             // Form submissions
-            document.getElementById('login-form').addEventListener('submit', function(e) {
+            document.getElementById('login-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 
-                if (loginUser(email, password)) {
+                try {
+                    await loginUser(email, password);
                     loginModal.style.display = 'none';
                     showHomePage();
+                } catch (error) {
+                    alert(error.message);
                 }
             });
 
-            document.getElementById('register-form').addEventListener('submit', function(e) {
+            document.getElementById('register-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const username = document.getElementById('register-username').value;
                 const email = document.getElementById('register-email').value;
@@ -2445,36 +2368,49 @@
                     return;
                 }
                 
-                if (registerUser(username, email, password)) {
+                try {
+                    await registerUser(username, email, password);
                     registerModal.style.display = 'none';
                     showHomePage();
+                } catch (error) {
+                    alert(error.message);
                 }
             });
 
             // Profile form
-            document.getElementById('profile-form').addEventListener('submit', function(e) {
+            document.getElementById('profile-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const username = document.getElementById('profile-username-input').value;
                 const email = document.getElementById('profile-email-input').value;
                 
-                updateUserProfile(username, email, currentUser.avatar);
+                try {
+                    const user = await apiRequest('/user', {
+                        method: 'PUT',
+                        body: { username, email }
+                    });
+                    currentUser = user;
+                    updateUIForLoggedInUser();
+                    alert('Профиль успешно обновлен!');
+                } catch (error) {
+                    alert('Ошибка при обновлении профиля: ' + error.message);
+                }
             });
 
             // Avatar upload
-            avatarUploadInput.addEventListener('change', function(e) {
+            avatarUploadInput.addEventListener('change', async function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        currentUser.avatar = e.target.result;
-                        updateUserProfile(currentUser.username, currentUser.email, currentUser.avatar);
-                    };
-                    reader.readAsDataURL(file);
+                    try {
+                        await updateAvatar(file);
+                        alert('Аватар успешно обновлен!');
+                    } catch (error) {
+                        alert('Ошибка при обновлении аватара: ' + error.message);
+                    }
                 }
             });
 
             // Product form
-            document.getElementById('product-form').addEventListener('submit', function(e) {
+            document.getElementById('product-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const title = document.getElementById('product-title').value;
@@ -2483,17 +2419,24 @@
                 const price = parseInt(document.getElementById('product-price').value);
                 const description = document.getElementById('product-description').value;
                 const fullDescription = document.getElementById('product-full-description').value;
-                const image = imagePreview.style.display !== 'none' ? imagePreview.src : null;
                 
-                addProduct({
-                    title,
-                    category,
-                    subcategory,
-                    price,
-                    description,
-                    fullDescription,
-                    image
-                });
+                try {
+                    await addProduct({
+                        title,
+                        category,
+                        subcategory,
+                        price,
+                        description,
+                        fullDescription
+                    });
+                    
+                    document.getElementById('product-form').reset();
+                    imagePreview.style.display = 'none';
+                    showHomePage();
+                    alert('Товар успешно добавлен!');
+                } catch (error) {
+                    alert('Ошибка при добавлении товара: ' + error.message);
+                }
             });
 
             // Category change
@@ -2560,7 +2503,6 @@
                 document.getElementById('chat-title').textContent = 'Поддержка';
                 chatContainer.style.display = 'flex';
                 chatButton.style.display = 'none';
-                loadChatMessages('support');
             });
 
             navAddProduct.addEventListener('click', function(e) {
@@ -2633,7 +2575,7 @@
         function showMyProducts() {
             if (!currentUser) return;
             
-            const myProducts = products.filter(p => p.sellerId === currentUser.id);
+            const myProducts = products.filter(p => p.seller && p.seller._id === currentUser._id);
             
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
@@ -2664,8 +2606,8 @@
         function showMyPurchases() {
             if (!currentUser) return;
             
-            const purchases = JSON.parse(localStorage.getItem('purchases')) || [];
-            const myPurchases = purchases.filter(p => p.buyerId === currentUser.id);
+            // In a real app, this would come from the API
+            const myPurchases = [];
             
             homeContent.style.display = 'block';
             addProductForm.style.display = 'none';
@@ -2713,7 +2655,16 @@
             document.querySelector('.section-title').textContent = 'Мои покупки';
         }
 
-        // Initialize the application when DOM is loaded
+        // Инициализация при загрузке
+        async function init() {
+            await checkAuth();
+            populateCategories();
+            populatePlatforms();
+            populateProductCategories();
+            await loadProducts();
+            setupEventListeners();
+        }
+
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
